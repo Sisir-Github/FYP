@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <footer className="border-t border-blue-100 bg-white/80">
-      <div className="container-shell grid gap-6 py-10 md:grid-cols-4">
+      <div className="container-shell grid gap-6 py-10 md:grid-cols-3">
         <div>
           <h3 className="font-display text-lg text-ink">
             Everest Encounter Treks
@@ -23,20 +23,17 @@ function Footer() {
         </div>
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">
-            Quick Links
+            Trek Routes
           </h4>
           <ul className="mt-3 space-y-2 text-sm text-slate-600">
             <li>
-              <a href="/faq">FAQ</a>
+              <a href="/">Home</a>
             </li>
             <li>
-              <a href="/partners">Partners</a>
+              <a href="/treks">Treks</a>
             </li>
             <li>
-              <a href="/trust">Trust & Safety</a>
-            </li>
-            <li>
-              <a href="/calculator">Cost Calculator</a>
+              <a href="/login">Login</a>
             </li>
           </ul>
         </div>

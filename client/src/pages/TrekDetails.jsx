@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useGetTrekByIdQuery, useGetTrekAvailabilityQuery, useSubmitInquiryMutation } from '../api/trekApi.js'
 import { useCreateBookingMutation } from '../api/bookingApi.js'
 import { useGetReviewsQuery } from '../api/reviewApi.js'
@@ -38,7 +38,6 @@ function TrekDetails() {
   const { format } = useCurrency()
   const [confirmation, setConfirmation] = useState(null)
   const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-  const navigate = useNavigate()
 
   const trek = data?.data || data || {
     name: 'Signature Himalayan Trek',
@@ -116,9 +115,6 @@ function TrekDetails() {
         contactPhone,
       }).unwrap()
       setConfirmation(response)
-      if (response?.booking?._id) {
-        navigate(`/payment/${response.booking._id}`)
-      }
     } catch {
       // Handled by UI state below.
     }
@@ -310,10 +306,10 @@ function TrekDetails() {
               ))}
             </div>
             <Link
-              to="/user/review"
+              to="/login"
               className="mt-4 inline-flex text-sm font-semibold text-blue-700"
             >
-              Submit a review &gt;
+              Login to submit a review &gt;
             </Link>
           </section>
         </div>
@@ -452,10 +448,10 @@ function TrekDetails() {
               Send your questions to our team and receive personalized guidance.
             </p>
             <Link
-              to="/user/inquiry"
+              to="/login"
               className="mt-4 inline-flex rounded-full border border-blue-700 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white"
             >
-              Start inquiry
+              Login to start inquiry
             </Link>
           </div>
         </aside>
