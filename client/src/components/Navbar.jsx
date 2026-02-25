@@ -1,0 +1,156 @@
+import { NavLink, Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { useLogoutMutation } from '../api/authApi.js'
+import { clearCredentials } from '../app/authSlice.js'
+import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useCurrency } from '../contexts/CurrencyContext.jsx'
+
+const navLinkClass =
+  'text-sm uppercase tracking-[0.2em] font-semibold transition hover:text-blue-700'
+
+function Navbar() {
+  const { isAuthenticated, role, user } = useSelector((state) => state.auth)
+  const [logout] = useLogoutMutation()
+  const dispatch = useDispatch()
+  const { language, setLanguage, t } = useLanguage()
+  const { currency, setCurrency } = useCurrency()
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap()
+    } catch {
+      // Ignore API errors and clear local state anyway.
+    } finally {
+      dispatch(clearCredentials())
+    }
+  }
+
+  return (
+    <header className="sticky top-0 z-30 border-b border-blue-100/70 bg-white/90 backdrop-blur">
+      <div className="flex w-full items-center justify-between gap-6 px-6 py-4">
+        <Link to="/" className="flex flex-col">
+          <span className="font-display text-xl text-ink">
+            Everest Encounter
+          </span>
+          <span className="text-xs uppercase tracking-[0.3em] text-blue-700">
+            Treks & Expeditions
+          </span>
+        </Link>
+        <nav className="hidden items-center gap-6 lg:flex">
+          <NavLink to="/" className={navLinkClass}>
+            {t('navHome')}
+          </NavLink>
+          <NavLink to="/treks" className={navLinkClass}>
+            {t('navTreks')}
+          </NavLink>
+          <NavLink to="/gallery" className={navLinkClass}>
+            {t('navGallery')}
+          </NavLink>
+          <NavLink to="/guide" className={navLinkClass}>
+            {t('navGuide')}
+          </NavLink>
+          <NavLink to="/contact" className={navLinkClass}>
+            {t('navContact')}
+          </NavLink>
+          <details className="relative">
+            <summary className="cursor-pointer list-none text-sm uppercase tracking-[0.2em] font-semibold text-slate-600 transition hover:text-blue-700">
+              {t('navMore')}
+            </summary>
+            <div className="absolute left-0 mt-3 w-48 rounded-2xl border border-blue-100 bg-white p-3 shadow">
+              <NavLink to="/about" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navAbout')}
+              </NavLink>
+              <NavLink to="/blog" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navBlog')}
+              </NavLink>
+              <NavLink to="/faq" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navFaq')}
+              </NavLink>
+              <NavLink to="/partners" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navPartners')}
+              </NavLink>
+              <NavLink to="/trust" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navTrust')}
+              </NavLink>
+              <NavLink to="/calculator" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
+                {t('navCalculator')}
+              </NavLink>
+            </div>
+          </details>
+          {isAuthenticated && role === 'ADMIN' && (
+            <NavLink to="/admin" className={navLinkClass}>
+              {t('navAdmin')}
+            </NavLink>
+          )}
+          {isAuthenticated && role !== 'ADMIN' && (
+            <NavLink to="/user" className={navLinkClass}>
+              {t('navDashboard')}
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/bookings" className={navLinkClass}>
+              {t('navBookings')}
+            </NavLink>
+          )}
+        </nav>
+        <div className="flex items-center gap-3">
+          <select
+            value={language}
+            onChange={(event) => setLanguage(event.target.value)}
+            className="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 md:block"
+          >
+            <option value="en">English</option>
+            <option value="uk">English (UK)</option>
+            <option value="hi">Hindi</option>
+            <option value="ne">Nepali</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="ur">Urdu</option>
+          </select>
+          <select
+            value={currency}
+            onChange={(event) => setCurrency(event.target.value)}
+            className="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 md:block"
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="NPR">NPR</option>
+          </select>
+          {isAuthenticated ? (
+            <>
+              <span className="hidden text-sm text-slate-600 md:block">
+                {t('navWelcome')}, {user?.name || t('authWelcomeTraveler')}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-600 hover:text-blue-700"
+              >
+                {t('navLogout')}
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                className="rounded-full border border-blue-700 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-700 hover:text-white"
+              >
+                {t('navSignIn')}
+              </NavLink>
+              <NavLink
+                to="/register"
+                className="rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-600"
+              >
+                {t('navRegister')}
+              </NavLink>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  )
+}
+
+export default Navbar
