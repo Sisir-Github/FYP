@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 const translations = {
   en: {
@@ -897,6 +897,10 @@ export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(
     localStorage.getItem('everest_lang') || 'en',
   )
+
+  useEffect(() => {
+    document.documentElement.lang = language === 'uk' ? 'en-GB' : language
+  }, [language])
 
   const value = useMemo(() => {
     const table = translations[language] || translations.en
