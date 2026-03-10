@@ -1,20 +1,29 @@
+import { Suspense, lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout.jsx'
-import Home from '../pages/Home.jsx'
-import TrekList from '../pages/TrekList.jsx'
-import TrekDetails from '../pages/TrekDetails.jsx'
-import Login from '../pages/Login.jsx'
-import Register from '../pages/Register.jsx'
+import Loader from '../components/Loader.jsx'
+
+const Home = lazy(() => import('../pages/Home.jsx'))
+const TrekList = lazy(() => import('../pages/TrekList.jsx'))
+const TrekDetails = lazy(() => import('../pages/TrekDetails.jsx'))
+const Login = lazy(() => import('../pages/Login.jsx'))
+const Register = lazy(() => import('../pages/Register.jsx'))
+
+const pageFallback = <Loader label="Loading page..." />
+
+function loadPage(page) {
+  return <Suspense fallback={pageFallback}>{page}</Suspense>
+}
 
 function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route index element={<Home />} />
-        <Route path="treks" element={<TrekList />} />
-        <Route path="treks/:id" element={<TrekDetails />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route index element={loadPage(<Home />)} />
+        <Route path="treks" element={loadPage(<TrekList />)} />
+        <Route path="treks/:id" element={loadPage(<TrekDetails />)} />
+        <Route path="login" element={loadPage(<Login />)} />
+        <Route path="register" element={loadPage(<Register />)} />
       </Route>
     </Routes>
   )
