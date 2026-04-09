@@ -33,7 +33,10 @@ function Footer() {
               <a href="/treks">Treks</a>
             </li>
             <li>
-              <a href="/login">Login</a>
+              <a href="/guide">Guide</a>
+            </li>
+            <li>
+              <a href="/gallery">Gallery</a>
             </li>
           </ul>
         </div>

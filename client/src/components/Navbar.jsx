@@ -43,6 +43,12 @@ function Navbar() {
           <NavLink to="/treks" className={navLinkClass}>
             {t('navTreks')}
           </NavLink>
+          <NavLink to="/guide" className={navLinkClass}>
+            {t('navGuide')}
+          </NavLink>
+          <NavLink to="/gallery" className={navLinkClass}>
+            {t('navGallery')}
+          </NavLink>
         </nav>
         <div className="flex items-center gap-3">
           <select
