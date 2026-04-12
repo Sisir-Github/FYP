@@ -7,6 +7,7 @@ import { useGetHeroSlidesQuery } from '../api/heroApi.js'
 import Loader from '../components/Loader.jsx'
 import { motion } from 'framer-motion'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+
 const imageSet = {
   hero: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
   airplane:
@@ -81,6 +82,8 @@ const heroSlides = [
   },
 ]
 
+const MotionSection = motion.section
+
 function Home() {
   const [query, setQuery] = useState('')
   const [region, setRegion] = useState('all')
@@ -88,7 +91,7 @@ function Home() {
   const { t } = useLanguage()
   const [activeSlide, setActiveSlide] = useState(0)
   const { data: treksData, isLoading: treksLoading } = useGetTreksQuery()
-  const { data: regionsData, isLoading: regionsLoading } = useGetRegionsQuery()
+  const { data: regionsData } = useGetRegionsQuery()
   const { data: reviewsData } = useGetReviewsQuery()
   const { data: galleryData } = useGetGalleryQuery()
   const { data: heroData } = useGetHeroSlidesQuery()
@@ -107,11 +110,11 @@ function Home() {
   const regions = Array.isArray(rawRegions) ? rawRegions : fallbackRegions
   const reviewsRaw = reviewsData?.data ?? reviewsData ?? []
   const reviews = Array.isArray(reviewsRaw) ? reviewsRaw : []
-  const galleryRaw = galleryData?.items ?? galleryData?.data?.items ?? galleryData ?? []
-  const galleryItems = Array.isArray(galleryRaw) ? galleryRaw : []
+  const galleryRaw = galleryData?.items ?? galleryData?.data?.items ?? galleryData
 
   const featuredTreks = useMemo(() => treks.slice(0, 3), [treks])
   const featuredGallery = useMemo(() => {
+    const galleryItems = Array.isArray(galleryRaw) ? galleryRaw : []
     if (galleryItems.length === 0) {
       return [
         { title: 'High Himalayas', category: 'Everest', image: imageSet.hero },
@@ -121,7 +124,7 @@ function Home() {
     }
     const featured = galleryItems.filter((item) => item.isFeatured)
     return (featured.length ? featured : galleryItems).slice(0, 3)
-  }, [galleryItems])
+  }, [galleryRaw])
   const heroRaw = heroData?.items ?? heroData?.data?.items ?? heroData ?? []
   const heroItems = Array.isArray(heroRaw) ? heroRaw : []
   const slides = heroItems.length
@@ -153,7 +156,7 @@ function Home() {
 
   return (
     <div className="pb-16">
-      <motion.section
+      <MotionSection
         className="relative overflow-hidden bg-mist py-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -325,9 +328,9 @@ function Home() {
           <div className="absolute -left-24 top-10 h-64 w-64 rounded-full bg-blue-200/60 blur-3xl animate-float-slow" />
           <div className="absolute right-10 top-6 h-80 w-80 rounded-full bg-sky-200/60 blur-3xl animate-drift" />
         </div>
-      </motion.section>
+      </MotionSection>
 
-      <motion.section
+      <MotionSection
         className="container-shell mt-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -371,9 +374,9 @@ function Home() {
             </Link>
           ))}
         </div>
-      </motion.section>
+      </MotionSection>
 
-      <motion.section
+      <MotionSection
         className="container-shell mt-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -422,9 +425,9 @@ function Home() {
           ))}
         </div>
         )}
-      </motion.section>
+      </MotionSection>
 
-      <motion.section
+      <MotionSection
         className="container-shell mt-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -481,9 +484,9 @@ function Home() {
             </div>
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
 
-      <motion.section
+      <MotionSection
         className="container-shell mt-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -511,9 +514,9 @@ function Home() {
             <p>- {t('homePrepItem3')}</p>
           </div>
         </div>
-      </motion.section>
+       </MotionSection>
 
-      <motion.section
+      <MotionSection
         className="container-shell mt-16"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -543,7 +546,7 @@ function Home() {
             </div>
           ))}
         </div>
-      </motion.section>
+      </MotionSection>
     </div>
   )
 }

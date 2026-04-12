@@ -9,7 +9,7 @@ const navLinkClass =
   'text-sm uppercase tracking-[0.2em] font-semibold transition hover:text-blue-700'
 
 function Navbar() {
-  const { isAuthenticated, role, user } = useSelector((state) => state.auth)
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
   const [logout] = useLogoutMutation()
   const dispatch = useDispatch()
   const { language, setLanguage, t } = useLanguage()
@@ -43,55 +43,12 @@ function Navbar() {
           <NavLink to="/treks" className={navLinkClass}>
             {t('navTreks')}
           </NavLink>
-          <NavLink to="/gallery" className={navLinkClass}>
-            {t('navGallery')}
-          </NavLink>
           <NavLink to="/guide" className={navLinkClass}>
             {t('navGuide')}
           </NavLink>
-          <NavLink to="/contact" className={navLinkClass}>
-            {t('navContact')}
+          <NavLink to="/gallery" className={navLinkClass}>
+            {t('navGallery')}
           </NavLink>
-          <details className="relative">
-            <summary className="cursor-pointer list-none text-sm uppercase tracking-[0.2em] font-semibold text-slate-600 transition hover:text-blue-700">
-              {t('navMore')}
-            </summary>
-            <div className="absolute left-0 mt-3 w-48 rounded-2xl border border-blue-100 bg-white p-3 shadow">
-              <NavLink to="/about" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navAbout')}
-              </NavLink>
-              <NavLink to="/blog" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navBlog')}
-              </NavLink>
-              <NavLink to="/faq" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navFaq')}
-              </NavLink>
-              <NavLink to="/partners" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navPartners')}
-              </NavLink>
-              <NavLink to="/trust" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navTrust')}
-              </NavLink>
-              <NavLink to="/calculator" className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700">
-                {t('navCalculator')}
-              </NavLink>
-            </div>
-          </details>
-          {isAuthenticated && role === 'ADMIN' && (
-            <NavLink to="/admin" className={navLinkClass}>
-              {t('navAdmin')}
-            </NavLink>
-          )}
-          {isAuthenticated && role !== 'ADMIN' && (
-            <NavLink to="/user" className={navLinkClass}>
-              {t('navDashboard')}
-            </NavLink>
-          )}
-          {isAuthenticated && (
-            <NavLink to="/bookings" className={navLinkClass}>
-              {t('navBookings')}
-            </NavLink>
-          )}
         </nav>
         <div className="flex items-center gap-3">
           <select
