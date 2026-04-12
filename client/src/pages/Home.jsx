@@ -514,7 +514,7 @@ function Home() {
             <p>- {t('homePrepItem3')}</p>
           </div>
         </div>
-      </MotionSection>
+       </MotionSection>
 
       <MotionSection
         className="container-shell mt-16"
