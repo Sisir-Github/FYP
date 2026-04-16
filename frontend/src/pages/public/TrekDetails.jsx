@@ -5,11 +5,15 @@ import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const TrekDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
+  const { formatPrice, currency, getConvertedValue, conversionRateUsed } = useCurrency();
   
   const [trek, setTrek] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -72,6 +76,9 @@ const TrekDetails = () => {
     try {
       const { data } = await api.post('/bookings', {
         trekId: trek._id,
+        displayCurrency: currency,
+        displayAmount: getConvertedValue(trek.price * bookingData.participants),
+        conversionRateUsed,
         ...bookingData
       });
 
@@ -153,7 +160,7 @@ const TrekDetails = () => {
               <span className="text-white">{trek.averageRating ? `${trek.averageRating} / 5` : 'No reviews yet'}</span>
             </div>
             <div className="text-accent-400 text-xl font-bold">
-              ${trek.price} <span className="text-sm text-gray-300 font-normal">/ person</span>
+              {formatPrice(trek.price)} <span className="text-sm text-gray-300 font-normal">/ {t('person')}</span>
             </div>
           </div>
         </div>
@@ -186,7 +193,7 @@ const TrekDetails = () => {
                 
                 {activeTab === 'overview' && (
                   <div className="animate-fade-in">
-                    <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6">About This Trek</h2>
+                    <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6">{t('About This Trek')}</h2>
                     <div className="prose prose-lg text-gray-600 max-w-none mb-10 whitespace-pre-line">
                       {trek.description}
                     </div>
@@ -261,7 +268,7 @@ const TrekDetails = () => {
                     <div className="grid md:grid-cols-2 gap-10">
                       <div>
                         <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6 flex items-center gap-2">
-                          <HiCheck className="text-green-500" /> What's Included
+                          <HiCheck className="text-green-500" /> {t("What's Included")}
                         </h2>
                         <ul className="space-y-4">
                           {trek.included?.map((item, i) => (
@@ -400,9 +407,9 @@ const TrekDetails = () => {
             <div className="lg:w-1/3">
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-24 z-20">
                 <div className="text-center pb-6 border-b border-gray-100 mb-6">
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Starting From</p>
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('Starting From')}</p>
                   <p className="text-4xl font-heading font-bold text-primary-500">
-                    ${trek.price} <span className="text-sm font-normal text-gray-400">/ person</span>
+                    {formatPrice(trek.price)} <span className="text-sm font-normal text-gray-400">/ {t('person')}</span>
                   </p>
                 </div>
 
@@ -442,8 +449,8 @@ const TrekDetails = () => {
                         <textarea rows="2" className="input resize-none" value={bookingData.specialRequirements} onChange={(e) => setBookingData({...bookingData, specialRequirements: e.target.value})} placeholder="Dietary needs?"></textarea>
                       </div>
                       <div className="flex justify-between font-bold text-gray-800 mb-4 border-t pt-2">
-                        <span>Total:</span>
-                        <span>${trek.price * bookingData.participants}</span>
+                        <span>{t('Total')}:</span>
+                        <span>{formatPrice(trek.price * bookingData.participants)}</span>
                       </div>
                       <button type="submit" disabled={bookingLoading} className="btn-primary w-full py-3 mb-2 flex justify-center items-center gap-2">
                         {bookingLoading ? <LoadingSpinner size="sm" /> : bookingData.paymentMethod === 'Khalti' ? 'Pay with Khalti' : 'Confirm Booking'}
@@ -458,13 +465,13 @@ const TrekDetails = () => {
                         onClick={() => navigate('/verify-email')}
                         className="w-full py-4 text-lg bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-bold transition-colors"
                       >
-                        ⚠ Verify Email to Book
+                        {t('Verify Email to Book')}
                       </button>
                     ) : (
                       <button 
                         onClick={() => {
                           if (!isAuthenticated) {
-                            toast.error('Please log in to book this trek');
+                            toast.error(t('Please log in to book this trek'));
                             navigate('/login');
                             return;
                           }
@@ -472,7 +479,7 @@ const TrekDetails = () => {
                         }}
                         className="btn-primary w-full py-4 text-lg"
                       >
-                        Book This Trek
+                        {t('Book This Trek')}
                       </button>
                     )}
                     <p className="text-center text-xs text-gray-400 mt-4">

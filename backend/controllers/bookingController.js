@@ -39,28 +39,40 @@ const initiateKhaltiPayment = async (purchaseOrderId, purchaseOrderName, amount,
  * @access  Private
  */
 exports.createBooking = asyncHandler(async (req, res, next) => {
-  const { trekId, startDate, participants, specialRequirements, paymentMethod } = req.body;
+  const { 
+    trekId, 
+    startDate, 
+    participants, 
+    specialRequirements, 
+    paymentMethod,
+    displayCurrency,
+    displayAmount,
+    conversionRateUsed
+  } = req.body;
 
   const trek = await Trek.findById(trekId);
   if (!trek) {
     throw new ApiError(404, 'Trek not found');
   }
 
-  // Calculate total amount
+  // Calculate total amount in NPR (base currency)
   const totalAmount = trek.price * participants;
 
-  // Verify user's email if strictly required (optional, but good practice)
+  // Verify user's email
   if (!req.user.isVerified) {
     throw new ApiError(403, 'Please verify your email before booking');
   }
 
-  // Create pending booking
+  // Create pending booking with currency tracking
   const booking = await Booking.create({
     user: req.user.id,
     trek: trekId,
     startDate,
     participants,
     totalAmount,
+    displayCurrency: displayCurrency || 'NPR',
+    displayAmount: displayAmount || totalAmount,
+    conversionRateUsed: conversionRateUsed || 1,
     specialRequirements,
     paymentMethod,
     status: 'Pending',
@@ -69,16 +81,15 @@ exports.createBooking = asyncHandler(async (req, res, next) => {
 
   let paymentResponse = null;
 
-  // Handle Khalti Payment
+  // Handle Khalti Payment (Always in NPR)
   if (paymentMethod === 'Khalti') {
     try {
-      // The return URL the user is redirected to after Khalti popup
       const returnUrl = `${process.env.CLIENT_URL}/payments/verify`;
       
       const khaltiData = await initiateKhaltiPayment(
         booking._id.toString(),
         trek.title,
-        totalAmount,
+        totalAmount, // This is always NPR
         returnUrl
       );
 
@@ -91,7 +102,6 @@ exports.createBooking = asyncHandler(async (req, res, next) => {
         pidx: khaltiData.pidx,
       };
     } catch (error) {
-      // If Khalti fails, we still have the booking but we notify failure
       console.error('Khalti Init Error:', error.response?.data || error.message);
       throw new ApiError(500, 'Failed to initialize payment gateway');
     }

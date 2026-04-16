@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { HiMenu, HiX, HiUser, HiLogout, HiViewGrid, HiChevronDown } from 'react-icons/hi';
+import { HiMenu, HiX, HiUser, HiLogout, HiViewGrid, HiChevronDown, HiGlobeAlt, HiCash } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { t, i18n } = useTranslation();
+  const { currency, setCurrency } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,12 +27,28 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Treks', path: '/treks' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
+    { name: t('Home'), path: '/' },
+    { name: t('Treks'), path: '/treks' },
+    { name: t('About'), path: '/about' },
+    { name: t('Contact'), path: '/contact' },
   ];
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'np', name: 'नेपाली' },
+    { code: 'hi', name: 'हिन्दी' },
+    { code: 'zh', name: '中文' },
+    { code: 'fr', name: 'Français' },
+    { code: 'de', name: 'Deutsch' },
+    { code: 'ja', name: '日本語' }
+  ];
+
+  const currencies = ['NPR', 'USD', 'EUR', 'GBP', 'INR', 'AUD'];
 
   const hasDarkHero = 
     location.pathname === '/' || 
@@ -87,8 +107,44 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Auth */}
-        <div className="hidden lg:flex items-center gap-4">
+        {/* Desktop Controls (Language, Currency, Auth) */}
+        <div className="hidden lg:flex items-center gap-6">
+          {/* Language Selector */}
+          <div className="flex items-center gap-1">
+            <HiGlobeAlt className={`w-4 h-4 ${isSolid ? 'text-gray-500' : 'text-white/70'}`} />
+            <select
+              value={i18n.language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className={`bg-transparent text-xs font-medium focus:outline-none cursor-pointer ${
+                isSolid ? 'text-gray-700' : 'text-white'
+              }`}
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code} className="text-gray-800">
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Currency Selector */}
+          <div className="flex items-center gap-1">
+            <HiCash className={`w-4 h-4 ${isSolid ? 'text-gray-500' : 'text-white/70'}`} />
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className={`bg-transparent text-xs font-medium focus:outline-none cursor-pointer ${
+                isSolid ? 'text-gray-700' : 'text-white'
+              }`}
+            >
+              {currencies.map((curr) => (
+                <option key={curr} value={curr} className="text-gray-800">
+                  {curr}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {isAuthenticated ? (
             <div className="relative">
               <button
@@ -128,14 +184,14 @@ const Navbar = () => {
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      <HiViewGrid className="w-4 h-4" /> Dashboard
+                      <HiViewGrid className="w-4 h-4" /> {t('Dashboard')}
                     </Link>
                     <Link
                       to="/profile"
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      <HiUser className="w-4 h-4" /> Profile
+                      <HiUser className="w-4 h-4" /> {t('Profile')}
                     </Link>
                     {isAdmin && (
                       <Link
@@ -143,7 +199,7 @@ const Navbar = () => {
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-accent-600 hover:bg-accent-50 transition-colors"
                       >
-                        <HiViewGrid className="w-4 h-4" /> Admin Panel
+                        <HiViewGrid className="w-4 h-4" /> {t('Admin Panel')}
                       </Link>
                     )}
                     {!user.isVerified && (
@@ -152,7 +208,7 @@ const Navbar = () => {
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors font-bold"
                       >
-                        ⚠️ Verify Email
+                        ⚠️ {t('Verify Email')}
                       </Link>
                     )}
                     <hr className="my-1 border-gray-100" />
@@ -160,26 +216,26 @@ const Navbar = () => {
                       onClick={handleLogout}
                       className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
-                      <HiLogout className="w-4 h-4" /> Logout
+                      <HiLogout className="w-4 h-4" /> {t('Logout')}
                     </button>
                   </div>
                 </>
               )}
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-4">
               <Link
                 to="/login"
                 className={`text-sm font-medium transition-colors ${
                   isSolid ? 'text-gray-700 hover:text-accent-500' : 'text-white/90 hover:text-white'
                 }`}
               >
-                Log In
+                {t('Log In')}
               </Link>
               <Link to="/register" className="btn-primary btn-sm">
-                Sign Up
+                {t('Register')}
               </Link>
-            </>
+            </div>
           )}
         </div>
 
@@ -215,6 +271,40 @@ const Navbar = () => {
               </NavLink>
             ))}
             <hr className="border-gray-100" />
+            
+            {/* Mobile Selectors */}
+            <div className="grid grid-cols-2 gap-4 py-2">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">{t('Language')}</label>
+                <select
+                  value={i18n.language}
+                  onChange={(e) => changeLanguage(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none"
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">{t('Currency')}</label>
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none"
+                >
+                  {currencies.map((curr) => (
+                    <option key={curr} value={curr}>
+                      {curr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <hr className="border-gray-100" />
             {isAuthenticated ? (
               <>
                 <Link
@@ -222,14 +312,14 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className="block py-2 text-sm font-medium text-gray-700"
                 >
-                  Dashboard
+                  {t('Dashboard')}
                 </Link>
                 <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
                   className="block py-2 text-sm font-medium text-gray-700"
                 >
-                  Profile
+                  {t('Profile')}
                 </Link>
                 {isAdmin && (
                   <Link
@@ -237,7 +327,7 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     className="block py-2 text-sm font-medium text-accent-600"
                   >
-                    Admin Panel
+                    {t('Admin Panel')}
                   </Link>
                 )}
                 {!user.isVerified && (
@@ -246,7 +336,7 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     className="block py-2 text-sm font-bold text-yellow-600"
                   >
-                    ⚠️ Verify Email
+                    ⚠️ {t('Verify Email')}
                   </Link>
                 )}
                 <button
@@ -256,7 +346,7 @@ const Navbar = () => {
                   }}
                   className="block py-2 text-sm font-medium text-red-600"
                 >
-                  Logout
+                  {t('Logout')}
                 </button>
               </>
             ) : (
@@ -266,14 +356,14 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className="btn-outline btn-sm flex-1 text-center"
                 >
-                  Log In
+                  {t('Log In')}
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setIsOpen(false)}
                   className="btn-primary btn-sm flex-1 text-center"
                 >
-                  Sign Up
+                  {t('Register')}
                 </Link>
               </div>
             )}

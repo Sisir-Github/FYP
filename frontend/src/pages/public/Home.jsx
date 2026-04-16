@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   HiOutlineGlobe,
@@ -5,8 +6,31 @@ import {
   HiOutlineUserGroup,
   HiOutlineStar,
 } from 'react-icons/hi';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
+import api from '../../services/api';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const Home = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
+  const [featuredTreks, setFeaturedTreks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const { data } = await api.get('/treks?isFeatured=true&limit=3');
+        setFeaturedTreks(data.data.data);
+      } catch (error) {
+        console.error('Failed to fetch featured treks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <>
       {/* Hero Section */}
@@ -25,22 +49,21 @@ const Home = () => {
         {/* Content */}
         <div className="relative z-10 container-custom text-center text-white">
           <p className="text-accent-400 font-medium tracking-widest uppercase text-sm mb-4 animate-fade-in">
-            Nepal's Trusted Trekking Partner
+            {t("Nepal's Trusted Trekking Partner")}
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight mb-6 animate-fade-in-up">
-            Discover the <br />
-            <span className="text-accent-400">Himalayas</span>
+            {t('Discover the')} <br />
+            <span className="text-accent-400">{t('Himalayas')}</span>
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 animate-fade-in-up">
-            Expert-led treks and expeditions through the world's most breathtaking mountain
-            landscapes. Your adventure of a lifetime starts here.
+            {t('Expert-led treks and expeditions through the world\'s most breathtaking mountain landscapes.')} {t('Your adventure of a lifetime starts here.')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up">
             <Link to="/treks" className="btn-primary btn-lg">
-              Explore Treks
+              {t('Explore Treks')}
             </Link>
             <Link to="/contact" className="btn border-2 border-white text-white hover:bg-white hover:text-primary-900 btn-lg">
-              Contact Us
+              {t('Contact Us')}
             </Link>
           </div>
         </div>
@@ -58,10 +81,10 @@ const Home = () => {
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-white rounded-2xl shadow-xl p-8 -mt-20 relative z-20">
             {[
-              { value: '500+', label: 'Happy Trekkers' },
-              { value: '50+', label: 'Trek Packages' },
-              { value: '15+', label: 'Years Experience' },
-              { value: '100%', label: 'Safety Record' },
+              { value: '500+', label: t('Happy Trekkers') },
+              { value: '50+', label: t('Trek Packages') },
+              { value: '15+', label: t('Years Experience') },
+              { value: '100%', label: t('Safety Record') },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-2xl md:text-3xl font-heading font-bold text-accent-500">
@@ -79,10 +102,10 @@ const Home = () => {
         <div className="container-custom">
           <div className="text-center mb-14">
             <p className="text-accent-500 font-semibold text-sm uppercase tracking-wider mb-2">
-              Why Choose Us
+              {t('Why Choose Us')}
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary-500">
-              Your Journey, Our Expertise
+              {t('Your Journey, Our Expertise')}
             </h2>
           </div>
 
@@ -90,27 +113,27 @@ const Home = () => {
             {[
               {
                 icon: HiOutlineGlobe,
-                title: 'Expert Local Guides',
-                desc: 'Our experienced Sherpa guides know every trail, peak, and village in the Himalayas.',
+                title: t('Expert Local Guides'),
+                desc: t('Our experienced Sherpa guides know every trail, peak, and village in the Himalayas.'),
               },
               {
                 icon: HiOutlineShieldCheck,
-                title: 'Safety First',
-                desc: 'Comprehensive safety protocols, first-aid trained staff, and emergency evacuation plans.',
+                title: t('Safety First'),
+                desc: t('Comprehensive safety protocols, first-aid trained staff, and emergency evacuation plans.'),
               },
               {
                 icon: HiOutlineUserGroup,
-                title: 'Small Groups',
-                desc: 'Intimate group sizes for a personalized experience and minimal environmental impact.',
+                title: t('Small Groups'),
+                desc: t('Intimate group sizes for a personalized experience and minimal environmental impact.'),
               },
               {
                 icon: HiOutlineStar,
-                title: 'Premium Service',
-                desc: 'Quality equipment, comfortable lodging, and nutritious meals throughout your trek.',
+                title: t('Premium Service'),
+                desc: t('Quality equipment, comfortable lodging, and nutritious meals throughout your trek.'),
               },
             ].map((feature, i) => (
               <div
-                key={i}
+                key={feature.title}
                 className="card p-8 text-center group hover:-translate-y-2 transition-all duration-300"
               >
                 <div className="w-14 h-14 bg-accent-50 rounded-xl flex items-center justify-center mx-auto mb-5 group-hover:bg-accent-500 transition-colors duration-300">
@@ -126,75 +149,60 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Treks Placeholder */}
+      {/* Featured Treks Section */}
       <section className="section bg-white">
         <div className="container-custom">
           <div className="text-center mb-14">
             <p className="text-accent-500 font-semibold text-sm uppercase tracking-wider mb-2">
-              Top Destinations
+              {t('Top Destinations')}
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary-500">
-              Featured Trek Packages
+              {t('Featured Trek Packages')}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Everest Base Camp Trek',
-                duration: '14 Days',
-                difficulty: 'Moderate',
-                price: '$1,450',
-                img: 'https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=600&q=80&fit=crop',
-              },
-              {
-                title: 'Annapurna Circuit Trek',
-                duration: '18 Days',
-                difficulty: 'Challenging',
-                price: '$1,200',
-                img: 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80',
-              },
-              {
-                title: 'Langtang Valley Trek',
-                duration: '10 Days',
-                difficulty: 'Moderate',
-                price: '$980',
-                img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
-              },
-            ].map((trek, i) => (
-              <div
-                key={i}
-                className="card overflow-hidden group cursor-pointer"
-              >
-                <div className="relative h-56 overflow-hidden">
-                  <img
-                    src={trek.img}
-                    alt={trek.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-card-gradient" />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="badge bg-accent-500 text-white">{trek.difficulty}</span>
+          {loading ? (
+            <LoadingSpinner />
+          ) : featuredTreks.length === 0 ? (
+            <div className="text-center py-10 text-gray-500 italic">No featured treks at the moment.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredTreks.map((trek) => (
+                <Link
+                  key={trek._id}
+                  to={`/treks/${trek.slug}`}
+                  className="card overflow-hidden group cursor-pointer"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={trek.images?.[0]?.url || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80'}
+                      alt={trek.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-card-gradient" />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="badge bg-accent-500 text-white">{trek.difficulty}</span>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <span className="bg-white/90 backdrop-blur-sm text-primary-500 font-bold text-sm px-3 py-1 rounded-full">
+                        {formatPrice(trek.price)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-white/90 backdrop-blur-sm text-primary-500 font-bold text-sm px-3 py-1 rounded-full">
-                      {trek.price}
-                    </span>
+                  <div className="p-5">
+                    <h3 className="text-lg font-heading font-semibold text-primary-500 group-hover:text-accent-500 transition-colors">
+                      {trek.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1">📅 {trek.duration} {t('Days')}</p>
                   </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-heading font-semibold text-primary-500 group-hover:text-accent-500 transition-colors">
-                    {trek.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">📅 {trek.duration}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link to="/treks" className="btn-primary btn-lg">
-              View All Packages
+              {t('View All Packages')}
             </Link>
           </div>
         </div>
@@ -213,14 +221,14 @@ const Home = () => {
         </div>
         <div className="relative z-10 container-custom text-center text-white">
           <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-            Ready For Your Next Adventure?
+            {t('Ready For Your Next Adventure?')}
           </h2>
           <p className="text-lg text-white/70 max-w-xl mx-auto mb-8">
-            Join hundreds of trekkers who have trusted us with their Himalayan dreams.
-            Book your trek today and start your journey to the top of the world.
+            {t('Join hundreds of trekkers who have trusted us with their Himalayan dreams.')}
+            {t('Book your trek today and start your journey to the top of the world.')}
           </p>
           <Link to="/treks" className="btn-primary btn-lg">
-            Start Planning
+            {t('Start Planning')}
           </Link>
         </div>
       </section>

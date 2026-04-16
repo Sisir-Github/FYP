@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { HiOutlineCurrencyDollar, HiOutlineUsers, HiOutlineMap, HiOutlineTicket } from 'react-icons/hi';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const AdminDashboard = () => {
+  const { formatPrice } = useCurrency();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,8 +42,8 @@ const AdminDashboard = () => {
             <HiOutlineCurrencyDollar className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Total Revenue</p>
-            <h3 className="text-2xl font-bold text-gray-800">${stats?.totalRevenue?.toLocaleString() || 0}</h3>
+            <p className="text-sm text-gray-500 font-medium">{t?.('Total Revenue') || 'Total Revenue'}</p>
+            <h3 className="text-2xl font-bold text-gray-800">{formatPrice(stats?.totalRevenue || 0)}</h3>
           </div>
         </div>
 
@@ -95,7 +97,7 @@ const AdminDashboard = () => {
                     <p className="text-xs text-gray-500 mt-1 line-clamp-1">Booked: {b.trek?.title}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-bold text-primary-500">${b.totalAmount}</p>
+                    <p className="text-sm font-bold text-primary-500">{formatPrice(b.totalAmount)}</p>
                     <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full ${
                       b.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                     }`}>

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 
 // Layouts
 import MainLayout from './components/layout/MainLayout';
@@ -38,9 +39,9 @@ import AdminUsers from './pages/admin/AdminUsers';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* ========== PUBLIC ROUTES ========== */}
+      <CurrencyProvider>
+        <Router>
+          <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/treks" element={<TrekListing />} />
@@ -90,6 +91,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      </CurrencyProvider>
     </AuthProvider>
   );
 }

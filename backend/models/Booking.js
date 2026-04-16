@@ -25,6 +25,17 @@ const BookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    displayCurrency: {
+      type: String,
+      default: 'NPR',
+    },
+    displayAmount: {
+      type: Number,
+    },
+    conversionRateUsed: {
+      type: Number,
+      default: 1,
+    },
     status: {
       type: String,
       enum: ['Pending', 'Confirmed', 'Cancelled', 'Completed'],

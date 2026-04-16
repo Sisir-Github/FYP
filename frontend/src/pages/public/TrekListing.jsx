@@ -3,8 +3,12 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { HiOutlineFilter, HiSearch, HiOutlineLocationMarker, HiOutlineClock } from 'react-icons/hi';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const TrekListing = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
   const [treks, setTreks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,10 +70,10 @@ const TrekListing = () => {
       <div className="bg-primary-900 pt-32 pb-20">
         <div className="container-custom text-center">
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">
-            Explore Trek Packages
+            {t('Explore Trek Packages')}
           </h1>
           <p className="text-lg text-white/70 max-w-2xl mx-auto">
-            From the bustling trails of Everest to the remote wilderness of Manaslu, find your next adventure.
+            {t('From the bustling trails of Everest to the remote wilderness of Manaslu, find your next adventure.')}
           </p>
         </div>
       </div>
@@ -157,8 +161,8 @@ const TrekListing = () => {
                 </div>
 
                 <div className="pt-4 flex gap-3">
-                  <button type="submit" className="btn-primary flex-1">Apply</button>
-                  <button type="button" onClick={resetFilters} className="btn bg-gray-100 text-gray-600 hover:bg-gray-200">Reset</button>
+                   <button type="submit" className="btn-primary flex-1">{t('Apply')}</button>
+                   <button type="button" onClick={resetFilters} className="btn bg-gray-100 text-gray-600 hover:bg-gray-200">{t('Reset')}</button>
                 </div>
               </form>
             </div>
@@ -192,7 +196,7 @@ const TrekListing = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <div className="absolute top-4 right-4">
                         <span className="bg-white/90 backdrop-blur-sm text-primary-500 font-bold px-3 py-1 rounded-full text-sm">
-                          ${trek.price}
+                          {formatPrice(trek.price)}
                         </span>
                       </div>
                       <div className="absolute bottom-4 left-4 flex gap-2">
@@ -227,7 +231,7 @@ const TrekListing = () => {
                       </p>
 
                       <Link to={`/treks/${trek.slug}`} className="btn-outline w-full text-center group-hover:bg-primary-500 group-hover:text-white group-hover:border-primary-500 mt-auto">
-                        View Details
+                        {t('View Details')}
                       </Link>
                     </div>
                   </div>
