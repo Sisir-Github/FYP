@@ -12,6 +12,7 @@ const TrekDetails = () => {
   const { isAuthenticated, user } = useAuth();
   
   const [trek, setTrek] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -26,18 +27,27 @@ const TrekDetails = () => {
     specialRequirements: ''
   });
 
+  // Review State
+  const [reviewFormData, setReviewFormData] = useState({ rating: 5, title: '', text: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
   useEffect(() => {
-    const fetchTrek = async () => {
+    const fetchTrekAndReviews = async () => {
       try {
-        const { data } = await api.get(`/treks/slug/${slug}`);
-        setTrek(data.data);
+        const { data: trekData } = await api.get(`/treks/slug/${slug}`);
+        setTrek(trekData.data);
+        
+        // Fetch reviews
+        const { data: reviewData } = await api.get(`/treks/${trekData.data._id}/reviews`);
+        setReviews(reviewData.data);
+
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load trek details');
       } finally {
         setLoading(false);
       }
     };
-    fetchTrek();
+    fetchTrekAndReviews();
   }, [slug]);
 
   const handleBooking = async (e) => {
@@ -66,7 +76,6 @@ const TrekDetails = () => {
       });
 
       if (bookingData.paymentMethod === 'Khalti' && data.data.payment?.payment_url) {
-        // Redirect to Khalti standard checkout UI
         window.location.href = data.data.payment.payment_url;
       } else {
         toast.success(data.message);
@@ -76,6 +85,23 @@ const TrekDetails = () => {
       toast.error(err.response?.data?.message || 'Booking failed');
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) return toast.error('Please login to submit a review');
+
+    setSubmittingReview(true);
+    try {
+      const { data } = await api.post(`/treks/${trek._id}/reviews`, reviewFormData);
+      toast.success('Review added successfully');
+      setReviews([data.data, ...reviews]);
+      setReviewFormData({ rating: 5, title: '', text: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -98,7 +124,6 @@ const TrekDetails = () => {
 
   return (
     <>
-      {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px] flex items-end pb-16">
         <div className="absolute inset-0">
           <img 
@@ -134,17 +159,14 @@ const TrekDetails = () => {
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="bg-gray-50 py-12">
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Left Column - Details */}
             <div className="lg:w-2/3">
-              {/* Tabs */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8 sticky top-24 z-30">
                 <div className="flex overflow-x-auto hide-scrollbar">
-                  {['overview', 'itinerary', 'includes', 'gallery'].map((tab) => (
+                  {['overview', 'itinerary', 'includes', 'gallery', 'reviews'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
@@ -160,10 +182,8 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Tab Content */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 mb-8 min-h-[400px]">
                 
-                {/* Overview Tab */}
                 {activeTab === 'overview' && (
                   <div className="animate-fade-in">
                     <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6">About This Trek</h2>
@@ -197,7 +217,6 @@ const TrekDetails = () => {
                   </div>
                 )}
 
-                {/* Itinerary Tab */}
                 {activeTab === 'itinerary' && (
                   <div className="animate-fade-in">
                     <h2 className="text-2xl font-heading font-bold text-primary-500 mb-8">Daily Itinerary</h2>
@@ -237,7 +256,6 @@ const TrekDetails = () => {
                   </div>
                 )}
 
-                {/* Includes / Excludes Tab */}
                 {activeTab === 'includes' && (
                   <div className="animate-fade-in">
                     <div className="grid md:grid-cols-2 gap-10">
@@ -271,7 +289,6 @@ const TrekDetails = () => {
                   </div>
                 )}
 
-                {/* Gallery Tab */}
                 {activeTab === 'gallery' && (
                   <div className="animate-fade-in">
                     <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6">Photo Gallery</h2>
@@ -286,6 +303,89 @@ const TrekDetails = () => {
                               alt={`Gallery ${i+1}`}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                             />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'reviews' && (
+                  <div className="animate-fade-in">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                      <div>
+                        <h2 className="text-2xl font-heading font-bold text-primary-500">Traveler Reviews</h2>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {trek.averageRating ? `Average Rating: ${trek.averageRating} / 5 (${reviews.length} reviews)` : 'No reviews yet'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Review Form */}
+                    {isAuthenticated && (
+                      <div className="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-100">
+                        <h4 className="font-heading font-bold text-gray-800 mb-4">Write a Review</h4>
+                        <form onSubmit={submitReview}>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                              <label className="label text-xs">Rating</label>
+                              <select className="input py-2" value={reviewFormData.rating} onChange={(e) => setReviewFormData({...reviewFormData, rating: e.target.value})}>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Average</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="1">1 - Terrible</option>
+                              </select>
+                            </div>
+                            <div className="md:col-span-3">
+                              <label className="label text-xs">Title</label>
+                              <input type="text" className="input py-2" placeholder="Sum up your experience" required value={reviewFormData.title} onChange={(e) => setReviewFormData({...reviewFormData, title: e.target.value})} />
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <label className="label text-xs">Review Details</label>
+                            <textarea rows="3" className="input py-2 resize-none" placeholder="Share the details of your trek..." required value={reviewFormData.text} onChange={(e) => setReviewFormData({...reviewFormData, text: e.target.value})}></textarea>
+                          </div>
+                          <button type="submit" disabled={submittingReview} className="btn-primary text-sm px-6 py-2">
+                            {submittingReview ? <LoadingSpinner size="sm"/> : 'Submit Review'}
+                          </button>
+                        </form>
+                      </div>
+                    )}
+
+                    {/* Reviews List */}
+                    {reviews.length === 0 ? (
+                      <div className="text-center py-10 bg-gray-50 rounded-xl border border-gray-100">
+                         <span className="text-4xl block mb-3">⭐</span>
+                         <h3 className="text-lg font-bold text-gray-800">Be the first to review</h3>
+                         <p className="text-sm text-gray-500">Share your experience with other travelers.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {reviews.map(review => (
+                          <div key={review._id} className="border-b border-gray-100 pb-6 last:border-0">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                                  {review.user?.avatar?.url ? (
+                                    <img src={review.user.avatar.url} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">👤</div>
+                                  )}
+                                </div>
+                                <div>
+                                  <h4 className="font-bold text-gray-800 text-sm">{review.user?.name}</h4>
+                                  <span className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                              <div className="flex text-yellow-400">
+                                {[...Array(5)].map((_, i) => (
+                                  <HiOutlineStar key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : ''}`} />
+                                ))}
+                              </div>
+                            </div>
+                            <h5 className="font-bold text-gray-800 mb-1">{review.title}</h5>
+                            <p className="text-sm text-gray-600 leading-relaxed">{review.text}</p>
                           </div>
                         ))}
                       </div>

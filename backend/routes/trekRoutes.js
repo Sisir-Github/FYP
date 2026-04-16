@@ -13,7 +13,13 @@ const upload = require('../middleware/upload');
 const { createTrekValidator } = require('../validators/trekValidator');
 const validate = require('../middleware/validate');
 
+// Include other resource routers
+const reviewRouter = require('./reviewRoutes');
+
 const router = express.Router();
+
+// Re-route into other resource routers
+router.use('/:trekId/reviews', reviewRouter);
 
 router.route('/')
   .get(getTreks)
