@@ -36,6 +36,18 @@ const AdminBookings = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you certain you want to remove this booking?')) {
+      try {
+        await api.delete(`/bookings/${id}`);
+        toast.success('Booking deleted successfully');
+        fetchBookings();
+      } catch (error) {
+        toast.error('Failed to delete booking');
+      }
+    }
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -60,7 +72,8 @@ const AdminBookings = () => {
                   <th className="px-6 py-4 font-medium">Date & Details</th>
                   <th className="px-6 py-4 font-medium">Amount</th>
                   <th className="px-6 py-4 font-medium">Payment State</th>
-                  <th className="px-6 py-4 font-medium text-right rounded-tr-xl">Booking Status</th>
+                  <th className="px-6 py-4 font-medium text-right">Booking Status</th>
+                  <th className="px-6 py-4 font-medium text-center rounded-tr-xl">Delete</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
@@ -112,6 +125,15 @@ const AdminBookings = () => {
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>
                       </select>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                       <button 
+                         onClick={() => handleDelete(booking._id)}
+                         className="text-red-400 hover:text-red-600 transition-colors"
+                         title="Delete Booking"
+                       >
+                         <HiX className="w-5 h-5 mx-auto" />
+                       </button>
                     </td>
                   </tr>
                 ))}
