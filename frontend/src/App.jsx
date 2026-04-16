@@ -28,6 +28,8 @@ import Profile from './pages/user/Profile';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminTreks from './pages/admin/AdminTreks';
+import ManageTrek from './pages/admin/ManageTrek';
 
 function App() {
   return (
@@ -48,46 +50,11 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
             {/* ========== USER PROTECTED ROUTES ========== */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/my-bookings"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/payments"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/my-reviews"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/my-bookings" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/payments" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/my-reviews" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
@@ -104,7 +71,12 @@ function App() {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminDashboard />} />
-            <Route path="treks" element={<AdminDashboard />} />
+            
+            {/* Admin Trek Management */}
+            <Route path="treks" element={<AdminTreks />} />
+            <Route path="treks/add" element={<ManageTrek />} />
+            <Route path="treks/edit/:id" element={<ManageTrek />} />
+
             <Route path="bookings" element={<AdminDashboard />} />
             <Route path="payments" element={<AdminDashboard />} />
             <Route path="reviews" element={<AdminDashboard />} />
