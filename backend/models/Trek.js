@@ -113,12 +113,9 @@ const TrekSchema = new mongoose.Schema(
   }
 );
 
-// Create trek slug from the title before save
-TrekSchema.pre('save', function (next) {
-  if (this.isModified('title')) {
-    this.slug = slugify(this.title, { lower: true, strict: true });
-  }
-  next();
+// Create slug from title
+TrekSchema.pre('save', async function () {
+  this.slug = slugify(this.title, { lower: true });
 });
 
 // Configure virtual for reviews (later Phase)
