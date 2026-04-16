@@ -24,6 +24,7 @@ import NotFound from './pages/public/NotFound';
 
 // User Pages
 import Dashboard from './pages/user/Dashboard';
+import Profile from './pages/user/Profile';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -59,7 +60,7 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Profile />
                 </ProtectedRoute>
               }
             />

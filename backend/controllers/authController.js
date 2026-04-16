@@ -208,3 +208,74 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
   sendTokenResponse(user, 200, res, 'Email verified successfully');
 });
+
+/**
+ * @desc    Forgot password
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    // Return standard message even if user doesn't exist to prevent email enumeration
+    return res.status(200).json(new ApiResponse(200, 'If your email is registered, you will receive a password reset link shortly'));
+  }
+
+  // Get reset token
+  const resetToken = user.generateResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
+
+  // Create reset url
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Password Reset Request - Everest Encounter Treks',
+      html: emailTemplates.resetPassword(user.name, resetUrl),
+    });
+
+    res.status(200).json(new ApiResponse(200, 'If your email is registered, you will receive a password reset link shortly'));
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    throw new ApiError(500, 'Email could not be sent');
+  }
+});
+
+/**
+ * @desc    Reset password
+ * @route   PUT /api/auth/reset-password/:token
+ * @access  Public
+ */
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  if (!req.body.password || req.body.password.length < 6) {
+    throw new ApiError(400, 'Password must be at least 6 characters');
+  }
+
+  // Get hashed token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(400, 'Invalid or expired password reset token');
+  }
+
+  // Set new password
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  sendTokenResponse(user, 200, res, 'Password reset successful. You are now logged in.');
+});

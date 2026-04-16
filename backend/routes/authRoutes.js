@@ -6,6 +6,8 @@ const {
   getMe,
   refreshToken,
   verifyEmail,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/authController');
 
 const { registerValidator, loginValidator } = require('../validators/authValidator');
@@ -20,5 +22,7 @@ router.post('/logout', protect, logout);
 router.post('/refresh-token', refreshToken);
 router.get('/me', protect, getMe);
 router.get('/verify-email/:token', verifyEmail);
+router.post('/forgot-password', forgotPassword);
+router.put('/reset-password/:token', resetPassword);
 
 module.exports = router;
