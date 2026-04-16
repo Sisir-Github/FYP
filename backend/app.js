@@ -66,7 +66,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Route imports will be added as we build features
-// app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 // app.use('/api/users', require('./routes/userRoutes'));
 // app.use('/api/treks', require('./routes/trekRoutes'));
 // app.use('/api/bookings', require('./routes/bookingRoutes'));
