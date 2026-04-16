@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { HiMenu, HiX, HiUser, HiLogout, HiViewGrid, HiChevronDown } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -29,11 +30,20 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
+  const hasDarkHero = 
+    location.pathname === '/' || 
+    location.pathname === '/treks' || 
+    location.pathname.startsWith('/treks/') || 
+    location.pathname === '/about' || 
+    location.pathname === '/contact';
+
+  const isSolid = scrolled || !hasDarkHero;
+
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition-colors duration-200 ${
       isActive
         ? 'text-accent-500'
-        : scrolled
+        : isSolid
         ? 'text-gray-700 hover:text-accent-500'
         : 'text-white/90 hover:text-white'
     }`;
@@ -41,7 +51,7 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        isSolid
           ? 'bg-white/95 backdrop-blur-md shadow-md py-3'
           : 'bg-transparent py-5'
       }`}
@@ -53,14 +63,14 @@ const Navbar = () => {
           <div>
             <h1
               className={`text-lg font-heading font-bold leading-tight ${
-                scrolled ? 'text-primary-500' : 'text-white'
+                isSolid ? 'text-primary-500' : 'text-white'
               }`}
             >
               Everest Encounter
             </h1>
             <p
               className={`text-[10px] tracking-widest uppercase ${
-                scrolled ? 'text-gray-500' : 'text-white/70'
+                isSolid ? 'text-gray-500' : 'text-white/70'
               }`}
             >
               Treks & Expedition
@@ -84,7 +94,7 @@ const Navbar = () => {
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                  scrolled ? 'text-gray-700' : 'text-white'
+                  isSolid ? 'text-gray-700' : 'text-white'
                 }`}
               >
                 {user.avatar?.url ? (
@@ -152,7 +162,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 className={`text-sm font-medium transition-colors ${
-                  scrolled ? 'text-gray-700 hover:text-accent-500' : 'text-white/90 hover:text-white'
+                  isSolid ? 'text-gray-700 hover:text-accent-500' : 'text-white/90 hover:text-white'
                 }`}
               >
                 Log In
@@ -170,9 +180,9 @@ const Navbar = () => {
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? (
-            <HiX className={`w-6 h-6 ${scrolled ? 'text-gray-800' : 'text-white'}`} />
+            <HiX className={`w-6 h-6 ${isSolid ? 'text-gray-800' : 'text-white'}`} />
           ) : (
-            <HiMenu className={`w-6 h-6 ${scrolled ? 'text-gray-800' : 'text-white'}`} />
+            <HiMenu className={`w-6 h-6 ${isSolid ? 'text-gray-800' : 'text-white'}`} />
           )}
         </button>
       </div>

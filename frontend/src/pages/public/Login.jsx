@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-form-hooks';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { HiMail, HiLockClosed } from 'react-icons/hi';
 import api from '../../services/api';
@@ -34,7 +34,11 @@ const Login = () => {
       if (data.success) {
         login(data.data.user, data.data.accessToken);
         toast.success(data.message);
-        navigate('/dashboard');
+        if (data.data.user.role === 'admin') {
+           navigate('/admin');
+        } else {
+           navigate('/dashboard');
+        }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please check credentials.');
