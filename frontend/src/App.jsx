@@ -1,68 +1,118 @@
-import React from 'react';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+
+// Layouts
+import MainLayout from './components/layout/MainLayout';
+import AdminLayout from './components/layout/AdminLayout';
+
+// Route Guards
+import ProtectedRoute from './components/common/ProtectedRoute';
+import AdminRoute from './components/common/AdminRoute';
+
+// Public Pages
+import Home from './pages/public/Home';
+import TrekListing from './pages/public/TrekListing';
+import TrekDetails from './pages/public/TrekDetails';
+import About from './pages/public/About';
+import Contact from './pages/public/Contact';
+import Login from './pages/public/Login';
+import Register from './pages/public/Register';
+import VerifyEmail from './pages/public/VerifyEmail';
+import ForgotPassword from './pages/public/ForgotPassword';
+import ResetPassword from './pages/public/ResetPassword';
+import NotFound from './pages/public/NotFound';
+
+// User Pages
+import Dashboard from './pages/user/Dashboard';
+
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   return (
-    <div className="app-container">
-      <nav className="nav">
-        <div className="logo">
-          <h2 style={{ color: 'white', margin: 0 }}>EVEREST TREAK</h2>
-        </div>
-        <div className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#about">About</a>
-          <a href="#treks">Treks</a>
-          <a href="#contact">Contact</a>
-        </div>
-        <button className="btn-primary">Book Now</button>
-      </nav>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* ========== PUBLIC ROUTES ========== */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/treks" element={<TrekListing />} />
+            <Route path="/treks/:slug" element={<TrekDetails />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      <header id="home" className="hero">
-        <div className="hero-content">
-          <h1>Conquer the Heights</h1>
-          <p>Experience the majesty of the Himalayas with Everest Treak. Your journey to the roof of the world starts here.</p>
-          <button className="btn-primary">Start Your Adventure</button>
-        </div>
-      </header>
+            {/* ========== USER PROTECTED ROUTES ========== */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-bookings"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payments"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-reviews"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-      <section id="about" className="section">
-        <h2>Why Journey With Us?</h2>
-        <p style={{ maxWidth: '800px', margin: '1rem auto', color: '#718096' }}>
-          We provide expert-led expeditions, premium equipment, and unparalleled local knowledge to ensure your trek is safe, sustainable, and unforgettable.
-        </p>
-      </section>
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
 
-      <section id="treks" className="section" style={{ backgroundColor: '#edf2f7' }}>
-        <h2>Featured Treks</h2>
-        <div className="treks-grid">
-          <div className="trek-card">
-            <div className="trek-image" style={{ background: 'linear-gradient(45deg, #2c5282, #1a365d)' }}></div>
-            <div className="trek-info">
-              <h3>Everest Base Camp</h3>
-              <p>14 Days • Moderate High • $1,450</p>
-            </div>
-          </div>
-          <div className="trek-card">
-            <div className="trek-image" style={{ background: 'linear-gradient(45deg, #2b6cb0, #2c5282)' }}></div>
-            <div className="trek-info">
-              <h3>Annapurna Circuit</h3>
-              <p>18 Days • Challenging • $1,200</p>
-            </div>
-          </div>
-          <div className="trek-card">
-            <div className="trek-image" style={{ background: 'linear-gradient(45deg, #3182ce, #2b6cb0)' }}></div>
-            <div className="trek-info">
-              <h3>Island Peak Climbing</h3>
-              <p>20 Days • Difficult • $2,800</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="section" style={{ padding: '2rem 10%', backgroundColor: '#1a365d', color: 'white' }}>
-        <p>&copy; 2026 Everest Treak expeditions. Set your spirit free.</p>
-      </footer>
-    </div>
+          {/* ========== ADMIN ROUTES ========== */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminDashboard />} />
+            <Route path="treks" element={<AdminDashboard />} />
+            <Route path="bookings" element={<AdminDashboard />} />
+            <Route path="payments" element={<AdminDashboard />} />
+            <Route path="reviews" element={<AdminDashboard />} />
+            <Route path="notifications" element={<AdminDashboard />} />
+            <Route path="settings" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
