@@ -146,6 +146,15 @@ const Navbar = () => {
                         <HiViewGrid className="w-4 h-4" /> Admin Panel
                       </Link>
                     )}
+                    {!user.isVerified && (
+                      <Link
+                        to="/verify-email"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors font-bold"
+                      >
+                        ⚠️ Verify Email
+                      </Link>
+                    )}
                     <hr className="my-1 border-gray-100" />
                     <button
                       onClick={handleLogout}
@@ -229,6 +238,15 @@ const Navbar = () => {
                     className="block py-2 text-sm font-medium text-accent-600"
                   >
                     Admin Panel
+                  </Link>
+                )}
+                {!user.isVerified && (
+                  <Link
+                    to="/verify-email"
+                    onClick={() => setIsOpen(false)}
+                    className="block py-2 text-sm font-bold text-yellow-600"
+                  >
+                    ⚠️ Verify Email
                   </Link>
                 )}
                 <button

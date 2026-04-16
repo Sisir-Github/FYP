@@ -69,18 +69,15 @@ exports.register = asyncHandler(async (req, res, next) => {
     password,
   });
 
-  // Generate verification token
-  const verificationToken = user.generateVerificationToken();
+  // Generate verification OTP
+  const verificationOTP = user.generateVerificationOTP();
   await user.save({ validateBeforeSave: false });
-
-  // Create verification url
-  const verificationUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
 
   try {
     await sendEmail({
       to: user.email,
-      subject: 'Verify your email address - Everest Encounter Treks',
-      html: emailTemplates.verifyEmail(user.name, verificationUrl),
+      subject: 'Your Verification OTP - Everest Encounter Treks',
+      html: emailTemplates.verifyEmailOTP(user.name, verificationOTP),
     });
 
     sendTokenResponse(user, 201, res, 'Registration successful. Please check your email to verify your account.');
@@ -181,24 +178,34 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
 const crypto = require('crypto');
 
 /**
- * @desc    Verify user email
- * @route   GET /api/auth/verify-email/:token
- * @access  Public
+ * @desc    Verify user email using OTP
+ * @route   POST /api/auth/verify-otp
+ * @access  Private (Since it's accessed via Navbar when logged in)
  */
-exports.verifyEmail = asyncHandler(async (req, res, next) => {
-  // Get hashed token
+exports.verifyEmailOTP = asyncHandler(async (req, res, next) => {
+  const { otp } = req.body;
+  if (!otp) {
+    throw new ApiError(400, 'Please provide the OTP');
+  }
+
+  // Get hashed OTP
   const verificationToken = crypto
     .createHash('sha256')
-    .update(req.params.token)
+    .update(otp)
     .digest('hex');
 
-  const user = await User.findOne({
-    verificationToken,
-    verificationTokenExpire: { $gt: Date.now() },
-  });
-
+  const user = await User.findById(req.user.id);
+  
   if (!user) {
-    throw new ApiError(400, 'Invalid or expired verification token');
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (user.isVerified) {
+    return res.status(400).json(new ApiResponse(400, 'User is already verified'));
+  }
+
+  if (user.verificationToken !== verificationToken || user.verificationTokenExpire < Date.now()) {
+    throw new ApiError(400, 'Invalid or expired OTP');
   }
 
   user.isVerified = true;
@@ -206,7 +213,43 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
   user.verificationTokenExpire = undefined;
   await user.save({ validateBeforeSave: false });
 
+  // Optionally send a new token to update the cookies so isVerified is true in frontend
   sendTokenResponse(user, 200, res, 'Email verified successfully');
+});
+
+/**
+ * @desc    Resend OTP
+ * @route   POST /api/auth/resend-otp
+ * @access  Private
+ */
+exports.resendOTP = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (user.isVerified) {
+     return res.status(400).json(new ApiResponse(400, 'User is already verified'));
+  }
+
+  const verificationOTP = user.generateVerificationOTP();
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Your New Verification OTP - Everest Encounter Treks',
+      html: emailTemplates.verifyEmailOTP(user.name, verificationOTP),
+    });
+
+    res.status(200).json(new ApiResponse(200, 'A new OTP has been sent to your email'));
+  } catch (error) {
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    throw new ApiError(500, 'Email service failed. Could not send OTP.');
+  }
 });
 
 /**

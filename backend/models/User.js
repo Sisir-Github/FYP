@@ -67,12 +67,12 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate email verification token
-userSchema.methods.generateVerificationToken = function () {
-  const token = crypto.randomBytes(32).toString('hex');
-  this.verificationToken = crypto.createHash('sha256').update(token).digest('hex');
-  this.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-  return token;
+// Generate email verification OTP
+userSchema.methods.generateVerificationOTP = function () {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  this.verificationToken = crypto.createHash('sha256').update(otp).digest('hex');
+  this.verificationTokenExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+  return otp;
 };
 
 // Generate password reset token

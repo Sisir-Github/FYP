@@ -5,7 +5,7 @@ const emailTemplates = {
   /**
    * Email verification template
    */
-  verifyEmail: (name, verificationUrl) => `
+  verifyEmailOTP: (name, otp) => `
     <div style="max-width:600px;margin:0 auto;font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;padding:40px 20px;">
       <div style="background:#ffffff;border-radius:12px;padding:40px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
         <div style="text-align:center;margin-bottom:30px;">
@@ -14,14 +14,14 @@ const emailTemplates = {
         <h2 style="color:#334155;font-size:20px;">Verify Your Email</h2>
         <p style="color:#64748b;font-size:15px;line-height:1.6;">
           Hello <strong>${name}</strong>,<br/>
-          Thank you for registering with Everest Encounter Treks! Please verify your email address by clicking the button below.
+          Thank you for registering with Everest Encounter Treks! Please use the following One-Time Password (OTP) to verify your email address.
         </p>
         <div style="text-align:center;margin:30px 0;">
-          <a href="${verificationUrl}" style="background:#e8612d;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;">
-            Verify Email Address
-          </a>
+          <div style="background:#f1f5f9;letter-spacing:4px;color:#1e3a5f;padding:16px 32px;border-radius:8px;font-weight:700;font-size:24px;display:inline-block;border:1px dashed #cbd5e1;">
+            ${otp}
+          </div>
         </div>
-        <p style="color:#94a3b8;font-size:13px;">This link will expire in 24 hours. If you didn't create an account, please ignore this email.</p>
+        <p style="color:#94a3b8;font-size:13px;">This OTP will expire in 10 minutes. If you didn't create an account, please ignore this email.</p>
         <hr style="border:none;border-top:1px solid #e2e8f0;margin:30px 0;" />
         <p style="color:#94a3b8;font-size:12px;text-align:center;">© ${new Date().getFullYear()} Everest Encounter Treks and Expedition Pvt. Ltd.</p>
       </div>

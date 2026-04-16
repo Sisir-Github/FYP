@@ -453,19 +453,28 @@ const TrekDetails = () => {
                   </div>
                 ) : (
                   <>
-                    <button 
-                      onClick={() => {
-                        if (!isAuthenticated) {
-                          toast.error('Please log in to book this trek');
-                          navigate('/login');
-                          return;
-                        }
-                        setShowBookingModal(true);
-                      }}
-                      className="btn-primary w-full py-4 text-lg"
-                    >
-                      Book This Trek
-                    </button>
+                    {isAuthenticated && !user?.isVerified ? (
+                      <button 
+                        onClick={() => navigate('/verify-email')}
+                        className="w-full py-4 text-lg bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-bold transition-colors"
+                      >
+                        ⚠ Verify Email to Book
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            toast.error('Please log in to book this trek');
+                            navigate('/login');
+                            return;
+                          }
+                          setShowBookingModal(true);
+                        }}
+                        className="btn-primary w-full py-4 text-lg"
+                      >
+                        Book This Trek
+                      </button>
+                    )}
                     <p className="text-center text-xs text-gray-400 mt-4">
                       No hidden fees. Book with confidence.
                     </p>
