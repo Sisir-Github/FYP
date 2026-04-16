@@ -21,15 +21,18 @@ import VerifyEmail from './pages/public/VerifyEmail';
 import ForgotPassword from './pages/public/ForgotPassword';
 import ResetPassword from './pages/public/ResetPassword';
 import NotFound from './pages/public/NotFound';
+import VerifyKhalti from './pages/public/VerifyKhalti';
 
 // User Pages
 import Dashboard from './pages/user/Dashboard';
 import Profile from './pages/user/Profile';
+import MyBookings from './pages/user/MyBookings';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminTreks from './pages/admin/AdminTreks';
 import ManageTrek from './pages/admin/ManageTrek';
+import AdminBookings from './pages/admin/AdminBookings';
 
 function App() {
   return (
@@ -48,11 +51,12 @@ function App() {
             <Route path="/verify-email/:token" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/payments/verify" element={<VerifyKhalti />} />
 
             {/* ========== USER PROTECTED ROUTES ========== */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/my-bookings" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
             <Route path="/payments" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/my-reviews" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
@@ -77,7 +81,7 @@ function App() {
             <Route path="treks/add" element={<ManageTrek />} />
             <Route path="treks/edit/:id" element={<ManageTrek />} />
 
-            <Route path="bookings" element={<AdminDashboard />} />
+            <Route path="bookings" element={<AdminBookings />} />
             <Route path="payments" element={<AdminDashboard />} />
             <Route path="reviews" element={<AdminDashboard />} />
             <Route path="notifications" element={<AdminDashboard />} />

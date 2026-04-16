@@ -1,15 +1,30 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { HiOutlineClock, HiOutlineLocationMarker, HiOutlineStar, HiCheck, HiX, HiLightningBolt } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const TrekDetails = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  
   const [trek, setTrek] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Booking State
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    startDate: '',
+    participants: 1,
+    paymentMethod: 'Khalti',
+    specialRequirements: ''
+  });
 
   useEffect(() => {
     const fetchTrek = async () => {
@@ -24,6 +39,45 @@ const TrekDetails = () => {
     };
     fetchTrek();
   }, [slug]);
+
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error('Please log in to book a trek');
+      navigate('/login');
+      return;
+    }
+
+    if (!user?.isVerified) {
+      toast.error('Please verify your email address to make a booking.');
+      return;
+    }
+
+    if (!bookingData.startDate) {
+      toast.error('Please select a start date');
+      return;
+    }
+
+    setBookingLoading(true);
+    try {
+      const { data } = await api.post('/bookings', {
+        trekId: trek._id,
+        ...bookingData
+      });
+
+      if (bookingData.paymentMethod === 'Khalti' && data.data.payment?.payment_url) {
+        // Redirect to Khalti standard checkout UI
+        window.location.href = data.data.payment.payment_url;
+      } else {
+        toast.success(data.message);
+        navigate('/my-bookings');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Booking failed');
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   if (loading) return <LoadingSpinner fullScreen />;
   
@@ -119,23 +173,23 @@ const TrekDetails = () => {
 
                     <h3 className="text-xl font-heading font-bold text-primary-500 mb-6 mt-10 border-t pt-10 border-gray-100">At a Glance</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">Start Point</p>
                         <p className="font-heading font-semibold text-gray-800">{trek.startPoint}</p>
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">End Point</p>
                         <p className="font-heading font-semibold text-gray-800">{trek.endPoint}</p>
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">Best Seasons</p>
                         <p className="font-heading font-semibold text-gray-800">{trek.bestSeasons?.join(', ')}</p>
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">Accommodations</p>
                         <p className="font-heading font-semibold text-gray-800">{trek.accommodations?.join(', ')}</p>
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">Meals</p>
                         <p className="font-heading font-semibold text-gray-800">{trek.meals?.join(', ')}</p>
                       </div>
@@ -223,7 +277,7 @@ const TrekDetails = () => {
                     <h2 className="text-2xl font-heading font-bold text-primary-500 mb-6">Photo Gallery</h2>
                     {(!trek.images || trek.images.length === 0) ? (
                       <p className="text-gray-500 italic">No images available for this trek.</p>
-                    ) : (
+                     ) : (
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {trek.images.map((img, i) => (
                           <div key={img.public_id || i} className="aspect-square rounded-xl overflow-hidden cursor-pointer group">
@@ -263,15 +317,60 @@ const TrekDetails = () => {
                    </div>
                 </div>
 
-                <button 
-                  onClick={() => alert('Booking logic will be integrated in Phase 4')}
-                  className="btn-primary w-full py-4 text-lg"
-                >
-                  Book This Trek
-                </button>
-                <p className="text-center text-xs text-gray-400 mt-4">
-                  No hidden fees. Book with confidence.
-                </p>
+                {showBookingModal ? (
+                  <div className="animate-fade-in space-y-4 border-t pt-4">
+                    <h4 className="font-heading font-bold text-gray-800 text-center mb-4">Complete Your Booking</h4>
+                    <form onSubmit={handleBooking}>
+                      <div className="mb-4">
+                        <label className="label text-xs">Start Date</label>
+                        <input type="date" required min={new Date().toISOString().split('T')[0]} className="input" value={bookingData.startDate} onChange={(e) => setBookingData({...bookingData, startDate: e.target.value})} />
+                      </div>
+                      <div className="mb-4">
+                        <label className="label text-xs">Participants</label>
+                        <input type="number" required min="1" max="25" className="input" value={bookingData.participants} onChange={(e) => setBookingData({...bookingData, participants: parseInt(e.target.value)})} />
+                      </div>
+                      <div className="mb-4">
+                        <label className="label text-xs">Payment Method</label>
+                        <select className="input" value={bookingData.paymentMethod} onChange={(e) => setBookingData({...bookingData, paymentMethod: e.target.value})}>
+                          <option value="Khalti">Khalti ePayment</option>
+                          <option value="Bank Transfer">Bank Transfer (Manual)</option>
+                          <option value="Cash">Cash on Arrival</option>
+                        </select>
+                      </div>
+                      <div className="mb-6">
+                        <label className="label text-xs">Special Req. (Optional)</label>
+                        <textarea rows="2" className="input resize-none" value={bookingData.specialRequirements} onChange={(e) => setBookingData({...bookingData, specialRequirements: e.target.value})} placeholder="Dietary needs?"></textarea>
+                      </div>
+                      <div className="flex justify-between font-bold text-gray-800 mb-4 border-t pt-2">
+                        <span>Total:</span>
+                        <span>${trek.price * bookingData.participants}</span>
+                      </div>
+                      <button type="submit" disabled={bookingLoading} className="btn-primary w-full py-3 mb-2 flex justify-center items-center gap-2">
+                        {bookingLoading ? <LoadingSpinner size="sm" /> : bookingData.paymentMethod === 'Khalti' ? 'Pay with Khalti' : 'Confirm Booking'}
+                      </button>
+                      <button type="button" onClick={() => setShowBookingModal(false)} className="w-full text-center text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                    </form>
+                  </div>
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => {
+                        if (!isAuthenticated) {
+                          toast.error('Please log in to book this trek');
+                          navigate('/login');
+                          return;
+                        }
+                        setShowBookingModal(true);
+                      }}
+                      className="btn-primary w-full py-4 text-lg"
+                    >
+                      Book This Trek
+                    </button>
+                    <p className="text-center text-xs text-gray-400 mt-4">
+                      No hidden fees. Book with confidence.
+                    </p>
+                  </>
+                )}
 
                 {/* Need Help */}
                 <div className="mt-8 bg-gray-50 p-5 rounded-lg border border-gray-100 text-center">
