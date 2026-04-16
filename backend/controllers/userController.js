@@ -79,3 +79,91 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     );
   }
 });
+
+/**
+ * @desc    Get all users
+ * @route   GET /api/admin/users
+ * @access  Private/Admin
+ */
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+  const users = await User.find({});
+  res.status(200).json(new ApiResponse(200, 'Users fetched', users));
+});
+
+/**
+ * @desc    Create a new user
+ * @route   POST /api/admin/users
+ * @access  Private/Admin
+ */
+exports.createUser = asyncHandler(async (req, res, next) => {
+  const { name, email, password, role, isVerified } = req.body;
+  
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError(400, 'User already exists with this email');
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role: role || 'user',
+    isVerified: isVerified || false
+  });
+
+  res.status(201).json(new ApiResponse(201, 'User created successfully', user));
+});
+
+/**
+ * @desc    Get single user
+ * @route   GET /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  res.status(200).json(new ApiResponse(200, 'User fetched', user));
+});
+
+/**
+ * @desc    Update user
+ * @route   PUT /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.role = req.body.role || user.role;
+  if (req.body.isVerified !== undefined) {
+    user.isVerified = req.body.isVerified;
+  }
+  if (req.body.password) {
+     user.password = req.body.password;
+  }
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json(new ApiResponse(200, 'User updated successfully', user));
+});
+
+/**
+ * @desc    Delete user
+ * @route   DELETE /api/admin/users/:id
+ * @access  Private/Admin
+ */
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  
+  await user.deleteOne();
+  res.status(200).json(new ApiResponse(200, 'User deleted successfully', {}));
+});

@@ -33,6 +33,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminTreks from './pages/admin/AdminTreks';
 import ManageTrek from './pages/admin/ManageTrek';
 import AdminBookings from './pages/admin/AdminBookings';
+import AdminUsers from './pages/admin/AdminUsers';
 
 function App() {
   return (
@@ -74,7 +75,7 @@ function App() {
             }
           >
             <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
             
             {/* Admin Trek Management */}
             <Route path="treks" element={<AdminTreks />} />
