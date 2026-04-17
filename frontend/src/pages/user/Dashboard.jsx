@@ -4,8 +4,12 @@ import { HiOutlineBriefcase, HiOutlineCurrencyDollar, HiOutlineLocationMarker } 
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const { user } = useAuth();
   const [stats, setStats] = useState({
     totalBookings: 0,
@@ -52,8 +56,8 @@ const Dashboard = () => {
       <div className="container-custom max-w-5xl">
         
         <div className="mb-8">
-          <h1 className="text-3xl font-heading font-bold text-gray-800">Welcome back, {user?.name.split(' ')[0]}!</h1>
-          <p className="text-gray-500 mt-1">Ready for your next adventure in the Himalayas?</p>
+          <h1 className="text-3xl font-heading font-bold text-gray-800">{t('Welcome back')}, {user?.name.split(' ')[0]}!</h1>
+          <p className="text-gray-500 mt-1">{t('Ready for your next adventure in the Himalayas?')}</p>
         </div>
 
         {/* Top Widgets */}
@@ -63,7 +67,7 @@ const Dashboard = () => {
                <HiOutlineBriefcase className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-sm font-medium text-gray-500">Total Bookings</p>
+               <p className="text-sm font-medium text-gray-500">{t('Total Bookings')}</p>
                <h3 className="text-2xl font-bold text-gray-800">{stats.totalBookings}</h3>
              </div>
           </div>
@@ -73,7 +77,7 @@ const Dashboard = () => {
                <HiOutlineLocationMarker className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-sm font-medium text-gray-500">Upcoming Trips</p>
+               <p className="text-sm font-medium text-gray-500">{t('Upcoming Trips')}</p>
                <h3 className="text-2xl font-bold text-gray-800">{stats.upcomingTrips}</h3>
              </div>
           </div>
@@ -83,8 +87,8 @@ const Dashboard = () => {
                <HiOutlineCurrencyDollar className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-sm font-medium text-gray-500">Total Spent</p>
-               <h3 className="text-2xl font-bold text-gray-800">${stats.totalSpent}</h3>
+               <p className="text-sm font-medium text-gray-500">{t('Total Spent')}</p>
+               <h3 className="text-2xl font-bold text-gray-800">{formatPrice(stats.totalSpent)}</h3>
              </div>
           </div>
         </div>
@@ -96,14 +100,14 @@ const Dashboard = () => {
             {/* Recent Bookings */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
-                 <h2 className="text-xl font-heading font-bold text-gray-800">Recent Activity</h2>
-                 <Link to="/my-bookings" className="text-sm font-medium text-accent-500 hover:text-accent-600">View All</Link>
+                 <h2 className="text-xl font-heading font-bold text-gray-800">{t('Recent Activity')}</h2>
+                 <Link to="/my-bookings" className="text-sm font-medium text-accent-500 hover:text-accent-600">{t('View All')}</Link>
               </div>
 
               {stats.recentBookings.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">You have no recent booking activity.</p>
-                  <Link to="/treks" className="btn-primary mt-4 inline-block">Find a Trek</Link>
+                  <p className="text-gray-500">{t('You have no recent booking activity.')}</p>
+                  <Link to="/treks" className="btn-primary mt-4 inline-block">{t('Find a Trek')}</Link>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
@@ -136,9 +140,9 @@ const Dashboard = () => {
                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
                <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-accent-500/20 blur-xl"></div>
                <div className="relative z-10">
-                 <h3 className="font-heading font-bold text-xl mb-2">Need Assistance?</h3>
-                 <p className="text-white/80 text-sm mb-6">Our travel experts are ready to help you plan the perfect Himalayan expedition.</p>
-                 <Link to="/contact" className="btn bg-white text-primary-900 hover:bg-gray-100 w-full">Contact Support</Link>
+                 <h3 className="font-heading font-bold text-xl mb-2">{t('Need Assistance?')}</h3>
+                 <p className="text-white/80 text-sm mb-6">{t('Our travel experts are ready to help you plan the perfect Himalayan expedition.')}</p>
+                 <Link to="/contact" className="btn bg-white text-primary-900 hover:bg-gray-100 w-full">{t('Contact Support')}</Link>
                </div>
             </div>
           </div>

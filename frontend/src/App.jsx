@@ -35,6 +35,10 @@ import AdminTreks from './pages/admin/AdminTreks';
 import ManageTrek from './pages/admin/ManageTrek';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminReviews from './pages/admin/AdminReviews';
+import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminSettings from './pages/admin/AdminSettings';
 
 function App() {
   return (
@@ -84,10 +88,10 @@ function App() {
             <Route path="treks/edit/:id" element={<ManageTrek />} />
 
             <Route path="bookings" element={<AdminBookings />} />
-            <Route path="payments" element={<AdminDashboard />} />
-            <Route path="reviews" element={<AdminDashboard />} />
-            <Route path="notifications" element={<AdminDashboard />} />
-            <Route path="settings" element={<AdminDashboard />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>
       </Router>

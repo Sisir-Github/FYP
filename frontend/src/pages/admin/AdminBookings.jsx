@@ -3,8 +3,12 @@ import { toast } from 'react-hot-toast';
 import { HiCheck, HiX } from 'react-icons/hi';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const AdminBookings = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,8 +55,8 @@ const AdminBookings = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-heading font-bold text-gray-800">Manage Bookings</h1>
-        <p className="text-gray-500 text-sm mt-1">Review, confirm, or cancel user trek bookings.</p>
+        <h1 className="text-2xl font-heading font-bold text-gray-800">{t('Manage Bookings')}</h1>
+        <p className="text-gray-500 text-sm mt-1">{t('Review, confirm, or cancel user trek bookings.')}</p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -60,20 +64,20 @@ const AdminBookings = () => {
           <LoadingSpinner />
         ) : bookings.length === 0 ? (
           <div className="p-10 text-center text-gray-500">
-            No bookings found in the system.
+            {t('No bookings found in the system.')}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
-                  <th className="px-6 py-4 font-medium rounded-tl-xl">Customer</th>
-                  <th className="px-6 py-4 font-medium">Trek Package</th>
-                  <th className="px-6 py-4 font-medium">Date & Details</th>
-                  <th className="px-6 py-4 font-medium">Amount</th>
-                  <th className="px-6 py-4 font-medium">Payment State</th>
-                  <th className="px-6 py-4 font-medium text-right">Booking Status</th>
-                  <th className="px-6 py-4 font-medium text-center rounded-tr-xl">Delete</th>
+                  <th className="px-6 py-4 font-medium rounded-tl-xl">{t('Customer')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Trek Package')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Date & Details')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Amount')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Payment State')}</th>
+                  <th className="px-6 py-4 font-medium text-right">{t('Booking Status')}</th>
+                  <th className="px-6 py-4 font-medium text-center rounded-tr-xl">{t('Delete')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
@@ -91,7 +95,7 @@ const AdminBookings = () => {
                        <p className="text-xs text-gray-500">{booking.participants} pax</p>
                     </td>
                     <td className="px-6 py-4 font-bold text-gray-800">
-                      ${booking.totalAmount}
+                      {formatPrice(booking.totalAmount)}
                     </td>
                     <td className="px-6 py-4">
                       <select 

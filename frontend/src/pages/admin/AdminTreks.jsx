@@ -4,8 +4,12 @@ import { HiPlus, HiPencilAlt, HiTrash } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const AdminTreks = () => {
+  const { t } = useTranslation();
+  const { formatPrice } = useCurrency();
   const [treks, setTreks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,11 +45,11 @@ const AdminTreks = () => {
     <div>
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-gray-800">Manage Treks</h1>
-          <p className="text-gray-500 text-sm mt-1">Add, update or remove trek packages</p>
+          <h1 className="text-2xl font-heading font-bold text-gray-800">{t('Manage Treks')}</h1>
+          <p className="text-gray-500 text-sm mt-1">{t('Add, update or remove trek packages')}</p>
         </div>
         <Link to="/admin/treks/add" className="btn-primary flex items-center gap-2">
-          <HiPlus /> Add New Trek
+          <HiPlus /> {t('Add New Trek')}
         </Link>
       </div>
 
@@ -61,11 +65,11 @@ const AdminTreks = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
-                  <th className="px-6 py-4 font-medium rounded-tl-xl">Package Info</th>
-                  <th className="px-6 py-4 font-medium">Pricing</th>
-                  <th className="px-6 py-4 font-medium">Duration</th>
-                  <th className="px-6 py-4 font-medium">Difficulty</th>
-                  <th className="px-6 py-4 font-medium text-right rounded-tr-xl">Actions</th>
+                  <th className="px-6 py-4 font-medium rounded-tl-xl">{t('Package Info')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Pricing')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Duration')}</th>
+                  <th className="px-6 py-4 font-medium">{t('Difficulty')}</th>
+                  <th className="px-6 py-4 font-medium text-right rounded-tr-xl">{t('Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -87,7 +91,7 @@ const AdminTreks = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-semibold text-gray-800">${trek.price}</span>
+                      <span className="text-sm font-semibold text-gray-800">{formatPrice(trek.price)}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-gray-600">{trek.duration} Days</span>

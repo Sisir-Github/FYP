@@ -16,19 +16,22 @@ import {
   HiChevronLeft,
 } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
-
-const adminNavItems = [
-  { name: 'Dashboard', path: '/admin', icon: HiViewGrid, end: true },
-  { name: 'Users', path: '/admin/users', icon: HiUsers },
-  { name: 'Trek Packages', path: '/admin/treks', icon: HiCollection },
-  { name: 'Bookings', path: '/admin/bookings', icon: HiClipboardList },
-  { name: 'Payments', path: '/admin/payments', icon: HiCreditCard },
-  { name: 'Reviews', path: '/admin/reviews', icon: HiStar },
-  { name: 'Notifications', path: '/admin/notifications', icon: HiBell },
-  { name: 'Settings', path: '/admin/settings', icon: HiCog },
-];
+import { useTranslation } from 'react-i18next';
 
 const AdminLayout = () => {
+  const { t } = useTranslation();
+  
+  const adminNavItems = [
+    { name: t('Dashboard'), path: '/admin', icon: HiViewGrid, end: true },
+    { name: t('Users'), path: '/admin/users', icon: HiUsers },
+    { name: t('Trek Packages'), path: '/admin/treks', icon: HiCollection },
+    { name: t('Bookings'), path: '/admin/bookings', icon: HiClipboardList },
+    { name: t('Payments'), path: '/admin/payments', icon: HiCreditCard },
+    { name: t('Reviews'), path: '/admin/reviews', icon: HiStar },
+    { name: t('Notifications'), path: '/admin/notifications', icon: HiBell },
+    { name: t('Settings'), path: '/admin/settings', icon: HiCog },
+  ];
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -113,7 +116,7 @@ const AdminLayout = () => {
               to="/"
               className="flex items-center gap-2 px-3 py-2 text-sm text-white/60 hover:text-white transition-colors"
             >
-              <HiChevronLeft className="w-4 h-4" /> Back to Website
+              <HiChevronLeft className="w-4 h-4" /> {t('Back to Website')}
             </Link>
           </div>
         </div>
@@ -131,7 +134,7 @@ const AdminLayout = () => {
               <HiMenu className="w-6 h-6" />
             </button>
             <h2 className="text-lg font-heading font-semibold text-gray-800">
-              Admin Dashboard
+              {t('Admin Dashboard')}
             </h2>
           </div>
 

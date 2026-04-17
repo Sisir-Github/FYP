@@ -3,8 +3,10 @@ import { HiOutlineUserAdd, HiOutlinePencilAlt, HiOutlineTrash } from 'react-icon
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
 
 const AdminUsers = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,11 +90,11 @@ const AdminUsers = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
-          <p className="text-sm text-gray-500">Add, edit, or remove platform users</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('User Management')}</h1>
+          <p className="text-sm text-gray-500">{t('Add, edit, or remove platform users')}</p>
         </div>
         <button onClick={openAddModal} className="btn-primary flex items-center gap-2">
-          <HiOutlineUserAdd /> Add New User
+          <HiOutlineUserAdd /> {t('Add New User')}
         </button>
       </div>
 
@@ -100,11 +102,11 @@ const AdminUsers = () => {
         <table className="w-full text-left text-sm text-gray-600">
           <thead className="bg-gray-50 text-gray-700 uppercase tracking-wider text-xs">
             <tr>
-              <th className="px-6 py-4 font-semibold">Name</th>
-              <th className="px-6 py-4 font-semibold">Email</th>
-              <th className="px-6 py-4 font-semibold text-center">Role</th>
-              <th className="px-6 py-4 font-semibold text-center">Verified</th>
-              <th className="px-6 py-4 font-semibold text-center">Actions</th>
+              <th className="px-6 py-4 font-semibold">{t('Name')}</th>
+              <th className="px-6 py-4 font-semibold">{t('Email')}</th>
+              <th className="px-6 py-4 font-semibold text-center">{t('Role')}</th>
+              <th className="px-6 py-4 font-semibold text-center">{t('Verified')}</th>
+              <th className="px-6 py-4 font-semibold text-center">{t('Actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">

@@ -19,10 +19,16 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
     query = Review.find();
   }
 
-  const reviews = await query.populate({
-    path: 'user',
-    select: 'name avatar',
-  }).sort('-createdAt');
+  const reviews = await query
+    .populate({
+      path: 'user',
+      select: 'name avatar',
+    })
+    .populate({
+      path: 'trek',
+      select: 'title',
+    })
+    .sort('-createdAt');
 
   res.status(200).json(new ApiResponse(200, 'Reviews fetched successfully', reviews));
 });
