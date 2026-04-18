@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import blogService from '../../services/blogService';
 import { HiOutlineCalendar, HiOutlineUser, HiChevronRight } from 'react-icons/hi';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const Blogs = () => {
+  const { t } = useTranslation();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,9 +38,9 @@ const Blogs = () => {
       <div className="bg-primary-900 text-white py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20 z-0"></div>
         <div className="max-w-7xl mx-auto relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Our Travel Blog</h1>
+          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">{t('Our Travel Blog')}</h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Discover stories, guides, and tips from our trekking adventures in the Himalayas and beyond.
+            {t('Discover stories, guides, and tips from our trekking adventures in the Himalayas and beyond.')}
           </p>
         </div>
       </div>
@@ -46,8 +48,8 @@ const Blogs = () => {
       <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-20">
         {blogs.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">No blog posts yet</h2>
-            <p className="text-gray-500">Check back soon for new stories!</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('No blog posts yet')}</h2>
+            <p className="text-gray-500">{t('Check back soon for new stories!')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -64,7 +66,7 @@ const Blogs = () => {
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-accent-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">
-                      Travel Story
+                      {t('Travel Story')}
                     </span>
                   </div>
                 </Link>
@@ -95,7 +97,7 @@ const Blogs = () => {
                     to={`/blogs/${blog.slug}`}
                     className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm hover:gap-3 transition-all underline decoration-primary-200 underline-offset-4 decoration-2 hover:decoration-primary-600"
                   >
-                    Read More
+                    {t('Read More')}
                     <HiChevronRight className="w-4 h-4" />
                   </Link>
                 </div>

@@ -3,9 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import blogService from '../../services/blogService';
 import { HiOutlineCalendar, HiOutlineUser, HiChevronLeft, HiShare } from 'react-icons/hi';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 const BlogDetail = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,9 +43,9 @@ const BlogDetail = () => {
   if (!blog) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Blog post not found</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">{t('Blog post not found')}</h2>
         <Link to="/blogs" className="text-primary-600 font-semibold hover:underline">
-          Back to Blogs
+          {t('Back to Blogs')}
         </Link>
       </div>
     );
@@ -66,7 +68,7 @@ const BlogDetail = () => {
               className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 text-sm font-medium transition-colors"
             >
               <HiChevronLeft className="w-5 h-5" />
-              Back to Stories
+              {t('Back to Stories')}
             </Link>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight">
               {blog.title}
@@ -77,7 +79,7 @@ const BlogDetail = () => {
                   {blog.author?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-xs text-white/60">Written by</p>
+                  <p className="text-xs text-white/60">{t('Written by')}</p>
                   <p className="text-sm font-semibold">{blog.author?.name}</p>
                 </div>
               </div>
@@ -85,7 +87,7 @@ const BlogDetail = () => {
               <div className="flex items-center gap-2">
                 <HiOutlineCalendar className="w-5 h-5 text-accent-400" />
                 <div>
-                  <p className="text-xs text-white/60">Published on</p>
+                  <p className="text-xs text-white/60">{t('Published on')}</p>
                   <p className="text-sm font-semibold">{format(new Date(blog.createdAt), 'MMMM dd, yyyy')}</p>
                 </div>
               </div>
@@ -106,7 +108,7 @@ const BlogDetail = () => {
             className="flex items-center gap-2 text-gray-500 hover:text-primary-600 transition-colors text-sm font-semibold"
           >
             <HiShare className="w-5 h-5" />
-            Share Story
+            {t('Share Story')}
           </button>
         </div>
 
@@ -119,22 +121,22 @@ const BlogDetail = () => {
 
         {/* Footer info */}
         <div className="mt-20 p-8 bg-gray-50 rounded-3xl border border-gray-100 text-center">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Interested in this experience?</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{t('Interested in this experience?')}</h3>
           <p className="text-gray-600 mb-8 max-w-lg mx-auto">
-            Our expert guides can take you on the same paths described in this story. Check out our trekking packages to start your own adventure.
+            {t('Our expert guides can take you on the same paths described in this story. Check out our trekking packages to start your own adventure.')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 text-center">
             <Link
               to="/treks"
               className="bg-primary-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-primary-700 transition-colors"
             >
-              Explore Treks
+              {t('Explore Treks')}
             </Link>
             <Link
               to="/contact"
               className="bg-white text-primary-600 px-8 py-3 rounded-xl font-bold border-2 border-primary-600 hover:bg-primary-50 transition-colors"
             >
-              Contact Us
+              {t('Contact Us')}
             </Link>
           </div>
         </div>
