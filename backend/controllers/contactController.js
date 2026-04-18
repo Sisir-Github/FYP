@@ -41,6 +41,26 @@ exports.submitContact = asyncHandler(async (req, res, next) => {
     // We don't throw error here to avoid rolling back the DB entry
   }
 
+  // Create In-App Notification for Admin
+  try {
+    const User = require('../models/User');
+    const Notification = require('../models/Notification');
+    
+    // Find first admin user
+    const admin = await User.findOne({ role: 'admin' });
+    
+    if (admin) {
+      await Notification.create({
+        user: admin._id,
+        title: 'New Contact Inquiry',
+        message: `You have a new message from ${name} regarding "${subject}"`,
+        type: 'System',
+      });
+    }
+  } catch (err) {
+    console.error('Notification creation failed:', err);
+  }
+
   res.status(201).json(new ApiResponse(201, 'Message sent successfully', contact));
 });
 
