@@ -2,8 +2,7 @@ const Trek = require('../models/Trek');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const fileUpload = require('../utils/fileUpload');
 
 /**
  * @desc    Get all treks (with filtering, sorting, pagination)
@@ -121,19 +120,6 @@ exports.getTrekBySlug = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * Upload helper using streamifier
- */
-const uploadStream = (buffer, options) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
-      if (result) resolve(result);
-      else reject(error);
-    });
-    streamifier.createReadStream(buffer).pipe(stream);
-  });
-};
-
-/**
  * @desc    Create new trek
  * @route   POST /api/treks
  * @access  Private/Admin
@@ -154,20 +140,17 @@ exports.createTrek = asyncHandler(async (req, res, next) => {
     }
   });
 
-  // Handle multiple image uploads if req.files exists (from upload.array('images'))
+  // Handle multiple image uploads if req.files exists
   let images = [];
   if (req.files && req.files.length > 0) {
     const uploadPromises = req.files.map((file) => {
-      return uploadStream(file.buffer, {
-        folder: 'everest_encounter/treks',
-        crop: 'fill',
-      });
+      return fileUpload.uploadSingle(file.buffer, 'treks');
     });
 
     const results = await Promise.all(uploadPromises);
     images = results.map(result => ({
       public_id: result.public_id,
-      url: result.secure_url
+      url: result.url
     }));
   }
 
@@ -213,25 +196,22 @@ exports.updateTrek = asyncHandler(async (req, res, next) => {
     // Optional: check if they specified which existing images to KEEP
     // For simplicity, if they upload new images and don't pass an "images" array, we replace all old ones
     if (req.body.replaceImages === 'true' && existingImages.length > 0) {
-      // Delete old from cloudinary
+      // Delete old images
       const destroyPromises = existingImages.map(img => 
-        cloudinary.uploader.destroy(img.public_id)
+        fileUpload.deleteImage(img.public_id, 'treks')
       );
-      try { await Promise.all(destroyPromises); } catch(e) { console.error("Cloudinary cleanup error:", e); }
+      try { await Promise.all(destroyPromises); } catch(e) { console.error("Cleanup error:", e); }
       existingImages = []; 
     }
 
     const uploadPromises = req.files.map((file) => {
-      return uploadStream(file.buffer, {
-        folder: 'everest_encounter/treks',
-        crop: 'fill',
-      });
+      return fileUpload.uploadSingle(file.buffer, 'treks');
     });
 
     const results = await Promise.all(uploadPromises);
     newImages = results.map(result => ({
       public_id: result.public_id,
-      url: result.secure_url
+      url: result.url
     }));
   }
 
@@ -261,15 +241,15 @@ exports.deleteTrek = asyncHandler(async (req, res, next) => {
     throw new ApiError(404, `Trek not found with id of ${req.params.id}`);
   }
 
-  // Delete images from cloudinary
+  // Delete images
   if (trek.images && trek.images.length > 0) {
     const destroyPromises = trek.images.map(img => 
-      cloudinary.uploader.destroy(img.public_id)
+      fileUpload.deleteImage(img.public_id, 'treks')
     );
     try {
       await Promise.all(destroyPromises);
     } catch(e) {
-      console.error("Cloudinary cleanup error:", e);
+      console.error("Cleanup error:", e);
     }
   }
 
