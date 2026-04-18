@@ -22,6 +22,8 @@ import VerifyEmail from './pages/public/VerifyEmail';
 import ForgotPassword from './pages/public/ForgotPassword';
 import ResetPassword from './pages/public/ResetPassword';
 import NotFound from './pages/public/NotFound';
+import Blogs from './pages/public/Blogs';
+import BlogDetail from './pages/public/BlogDetail';
 import VerifyKhalti from './pages/public/VerifyKhalti';
 
 // User Pages
@@ -40,6 +42,7 @@ import AdminReviews from './pages/admin/AdminReviews';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminContacts from './pages/admin/AdminContacts';
+import AdminBlogs from './pages/admin/AdminBlogs';
 
 function App() {
   return (
@@ -58,6 +61,8 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/:slug" element={<BlogDetail />} />
             <Route path="/payments/verify" element={<VerifyKhalti />} />
 
             {/* ========== USER PROTECTED ROUTES ========== */}
@@ -93,6 +98,7 @@ function App() {
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="contacts" element={<AdminContacts />} />
+            <Route path="blogs" element={<AdminBlogs />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>

@@ -15,6 +15,7 @@ import {
   HiX,
   HiChevronLeft,
   HiChatAlt,
+  HiNewspaper,
 } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +30,7 @@ const AdminLayout = () => {
     { name: t('Trek Packages'), path: '/admin/treks', icon: HiCollection },
     { name: t('Bookings'), path: '/admin/bookings', icon: HiClipboardList },
     { name: t('Payments'), path: '/admin/payments', icon: HiCreditCard },
+    { name: t('Blogs'), path: '/admin/blogs', icon: HiNewspaper },
     { name: t('Reviews'), path: '/admin/reviews', icon: HiStar },
     { name: t('Notifications'), path: '/admin/notifications', icon: HiBell },
     { name: t('Contact Messages'), path: '/admin/contacts', icon: HiChatAlt },
