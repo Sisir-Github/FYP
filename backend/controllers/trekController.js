@@ -1,7 +1,6 @@
 const Trek = require('../models/Trek');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
-const asyncHandler = require('../utils/asyncHandler');
 const fileUpload = require('../utils/fileUpload');
 
 /**
@@ -9,7 +8,7 @@ const fileUpload = require('../utils/fileUpload');
  * @route   GET /api/treks
  * @access  Public
  */
-exports.getTreks = asyncHandler(async (req, res, next) => {
+exports.getTreks = async (req, res, next) => {
   let query;
 
   // Copy req.query
@@ -87,14 +86,14 @@ exports.getTreks = asyncHandler(async (req, res, next) => {
       data: treks,
     })
   );
-});
+};
 
 /**
  * @desc    Get single trek
  * @route   GET /api/treks/:id (or /:slug if configured later)
  * @access  Public
  */
-exports.getTrek = asyncHandler(async (req, res, next) => {
+exports.getTrek = async (req, res, next) => {
   const trek = await Trek.findById(req.params.id);
 
   if (!trek) {
@@ -102,14 +101,14 @@ exports.getTrek = asyncHandler(async (req, res, next) => {
   }
 
   res.status(200).json(new ApiResponse(200, 'Trek fetched successfully', trek));
-});
+};
 
 /**
  * @desc    Get single trek by slug
  * @route   GET /api/treks/slug/:slug
  * @access  Public
  */
-exports.getTrekBySlug = asyncHandler(async (req, res, next) => {
+exports.getTrekBySlug = async (req, res, next) => {
   const trek = await Trek.findOne({ slug: req.params.slug });
 
   if (!trek) {
@@ -117,14 +116,14 @@ exports.getTrekBySlug = asyncHandler(async (req, res, next) => {
   }
 
   res.status(200).json(new ApiResponse(200, 'Trek fetched successfully', trek));
-});
+};
 
 /**
  * @desc    Create new trek
  * @route   POST /api/treks
  * @access  Private/Admin
  */
-exports.createTrek = asyncHandler(async (req, res, next) => {
+exports.createTrek = async (req, res, next) => {
   let reqData = { ...req.body };
 
   // Parse JSON strings back to objects (since FormData sends arrays/objects as strings)
@@ -158,14 +157,14 @@ exports.createTrek = asyncHandler(async (req, res, next) => {
 
   const trek = await Trek.create(reqData);
   res.status(201).json(new ApiResponse(201, 'Trek created successfully', trek));
-});
+};
 
 /**
  * @desc    Update trek
  * @route   PUT /api/treks/:id
  * @access  Private/Admin
  */
-exports.updateTrek = asyncHandler(async (req, res, next) => {
+exports.updateTrek = async (req, res, next) => {
   // First ensure trek exists
   let trek = await Trek.findById(req.params.id);
 
@@ -227,14 +226,14 @@ exports.updateTrek = asyncHandler(async (req, res, next) => {
   });
 
   res.status(200).json(new ApiResponse(200, 'Trek updated successfully', trek));
-});
+};
 
 /**
  * @desc    Delete trek
  * @route   DELETE /api/treks/:id
  * @access  Private/Admin
  */
-exports.deleteTrek = asyncHandler(async (req, res, next) => {
+exports.deleteTrek = async (req, res, next) => {
   const trek = await Trek.findById(req.params.id);
 
   if (!trek) {
@@ -256,4 +255,4 @@ exports.deleteTrek = asyncHandler(async (req, res, next) => {
   await trek.deleteOne();
   
   res.status(200).json(new ApiResponse(200, 'Trek deleted successfully', {}));
-});
+};

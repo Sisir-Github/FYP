@@ -61,15 +61,13 @@ ReviewSchema.statics.getAverageRating = async function (trekId) {
 };
 
 // Call getAverageRating after save
-ReviewSchema.post('save', async function (doc, next) {
+ReviewSchema.post('save', async function (doc) {
   await doc.constructor.getAverageRating(doc.trek);
-  next();
 });
 
 // Call getAverageRating after remove
-ReviewSchema.post('deleteOne', { document: true, query: false }, async function (doc, next) {
+ReviewSchema.post('deleteOne', { document: true, query: false }, async function (doc) {
   await doc.constructor.getAverageRating(doc.trek);
-  next();
 });
 
 module.exports = mongoose.model('Review', ReviewSchema);

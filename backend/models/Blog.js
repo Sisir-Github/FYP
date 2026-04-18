@@ -41,9 +41,10 @@ const BlogSchema = new mongoose.Schema(
 );
 
 // Create blog slug from title
-BlogSchema.pre('save', function (next) {
-  this.slug = slugify(this.title, { lower: true });
-  next();
+BlogSchema.pre('save', function () {
+  if (this.isModified('title')) {
+    this.slug = slugify(this.title, { lower: true });
+  }
 });
 
 module.exports = mongoose.model('Blog', BlogSchema);

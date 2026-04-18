@@ -1,12 +1,11 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
-const asyncHandler = require('../utils/asyncHandler');
 
 /**
  * Protect routes - verify JWT access token
  */
-const protect = asyncHandler(async (req, res, next) => {
+const protect = async (req, res, next) => {
   let token;
 
   // Check Authorization header
@@ -33,7 +32,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
   req.user = user;
   next();
-});
+};
 
 /**
  * Restrict to specific roles
@@ -50,7 +49,7 @@ const authorize = (...roles) => {
 /**
  * Optional auth - attach user if token exists, but don't block
  */
-const optionalAuth = asyncHandler(async (req, res, next) => {
+const optionalAuth = async (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -69,6 +68,6 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   }
 
   next();
-});
+};
 
 module.exports = { protect, authorize, optionalAuth };

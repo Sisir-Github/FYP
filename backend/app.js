@@ -80,7 +80,7 @@ app.use('/api/blogs', require('./routes/blogRoutes'));
 
 // --------------- 404 HANDLER ---------------
 
-app.all('{*path}', (req, res, next) => {
+app.use((req, res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));
 });
 
