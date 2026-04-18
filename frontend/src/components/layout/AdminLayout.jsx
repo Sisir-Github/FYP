@@ -14,6 +14,7 @@ import {
   HiMenu,
   HiX,
   HiChevronLeft,
+  HiChatAlt,
 } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +30,7 @@ const AdminLayout = () => {
     { name: t('Payments'), path: '/admin/payments', icon: HiCreditCard },
     { name: t('Reviews'), path: '/admin/reviews', icon: HiStar },
     { name: t('Notifications'), path: '/admin/notifications', icon: HiBell },
+    { name: t('Contact Messages'), path: '/admin/contacts', icon: HiChatAlt },
     { name: t('Settings'), path: '/admin/settings', icon: HiCog },
   ];
 

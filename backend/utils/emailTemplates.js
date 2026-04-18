@@ -81,6 +81,32 @@ const emailTemplates = {
       </div>
     </div>
   `,
+  /**
+   * Admin notification for new contact message
+   */
+  adminContactNotification: (contact) => `
+    <div style="max-width:600px;margin:0 auto;font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;padding:40px 20px;">
+      <div style="background:#ffffff;border-radius:12px;padding:40px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+        <div style="text-align:center;margin-bottom:30px;">
+          <h1 style="color:#1e3a5f;font-size:24px;margin:0;">⛰️ Everest Encounter Treks</h1>
+        </div>
+        <h2 style="color:#334155;font-size:20px;">New Contact Message Received</h2>
+        <p style="color:#64748b;font-size:15px;line-height:1.6;">
+          You have received a new message from the Contact Us form.
+        </p>
+        <div style="background:#f1f5f9;border-radius:8px;padding:20px;margin:20px 0;">
+          <p style="margin:5px 0;color:#334155;"><strong>Name:</strong> ${contact.name}</p>
+          <p style="margin:5px 0;color:#334155;"><strong>Email:</strong> ${contact.email}</p>
+          <p style="margin:5px 0;color:#334155;"><strong>Subject:</strong> ${contact.subject}</p>
+          <p style="margin:20px 0 5px 0;color:#334155;"><strong>Message:</strong></p>
+          <p style="margin:0;color:#64748b;font-style:italic;line-height:1.6;">"${contact.message}"</p>
+        </div>
+        <p style="color:#94a3b8;font-size:13px;">Please log in to the admin panel to reply to this message.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:30px 0;" />
+        <p style="color:#94a3b8;font-size:12px;text-align:center;">© ${new Date().getFullYear()} Everest Encounter Treks and Expedition Pvt. Ltd.</p>
+      </div>
+    </div>
+  `,
 };
 
 module.exports = emailTemplates;

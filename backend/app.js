@@ -70,6 +70,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/treks', require('./routes/trekRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
 // app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));

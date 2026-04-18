@@ -1,6 +1,41 @@
+import { useState } from 'react';
 import { HiMail, HiPhone, HiLocationMarker } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
+import contactService from '../../services/contactService';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await contactService.submitContact(formData);
+      toast.success('Message sent successfully! We will get back to you soon.');
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Hero */}
@@ -50,27 +85,63 @@ const Contact = () => {
             <div className="lg:col-span-2">
               <div className="card p-8">
                 <h3 className="text-xl font-heading font-semibold text-primary-500 mb-6">Send a Message</h3>
-                <form className="space-y-5">
+                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="label">Full Name</label>
-                      <input type="text" className="input" placeholder="John Doe" />
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="input"
+                        placeholder="John Doe"
+                        required
+                      />
                     </div>
                     <div>
                       <label className="label">Email</label>
-                      <input type="email" className="input" placeholder="john@example.com" />
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="input"
+                        placeholder="john@example.com"
+                        required
+                      />
                     </div>
                   </div>
                   <div>
                     <label className="label">Subject</label>
-                    <input type="text" className="input" placeholder="How can we help?" />
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className="input"
+                      placeholder="How can we help?"
+                      required
+                    />
                   </div>
                   <div>
                     <label className="label">Message</label>
-                    <textarea rows={5} className="input resize-none" placeholder="Your message..." />
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={5}
+                      className="input resize-none"
+                      placeholder="Your message..."
+                      required
+                    />
                   </div>
-                  <button type="submit" className="btn-primary btn-lg w-full md:w-auto">
-                    Send Message
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary btn-lg w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               </div>
