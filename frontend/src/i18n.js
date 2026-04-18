@@ -46,7 +46,22 @@ const resources = {
       "Payment Failed": "Payment Failed",
       "Redirecting to your bookings...": "Redirecting to your bookings...",
       "View My Bookings": "View My Bookings",
-      "Go to My Bookings": "Go to My Bookings"
+      "Go to My Bookings": "Go to My Bookings",
+      "Blog": "Blog",
+      "Our Travel Blog": "Our Travel Blog",
+      "Discover stories, guides, and tips from our trekking adventures in the Himalayas and beyond.": "Discover stories, guides, and tips from our trekking adventures in the Himalayas and beyond.",
+      "No blog posts yet": "No blog posts yet",
+      "Check back soon for new stories!": "Check back soon for new stories!",
+      "Travel Story": "Travel Story",
+      "Read More": "Read More",
+      "Blog post not found": "Blog post not found",
+      "Back to Blogs": "Back to Blogs",
+      "Back to Stories": "Back to Stories",
+      "Written by": "Written by",
+      "Published on": "Published on",
+      "Share Story": "Share Story",
+      "Interested in this experience?": "Interested in this experience?",
+      "Our expert guides can take you on the same paths described in this story. Check out our trekking packages to start your own adventure.": "Our expert guides can take you on the same paths described in this story. Check out our trekking packages to start your own adventure."
     }
   },
   np: {
@@ -92,7 +107,22 @@ const resources = {
       "Payment Failed": "भुक्तानी असफल भयो",
       "Redirecting to your bookings...": "तपाईंको बुकिङमा रिडाइरेक्ट गर्दै...",
       "View My Bookings": "मेरो बुकिङहरू हेर्नुहोस्",
-      "Go to My Bookings": "मेरो बुकिङहरूमा जानुहोस्"
+      "Go to My Bookings": "मेरो बुकिङहरूमा जानुहोस्",
+      "Blog": "ब्लग",
+      "Our Travel Blog": "हाम्रो यात्रा ब्लग",
+      "Discover stories, guides, and tips from our trekking adventures in the Himalayas and beyond.": "हाम्रो हिमालय र त्यसभन्दा बाहिरको ट्रेकिङ साहसिक कार्यहरूबाट कथाहरू, गाइडहरू र सुझावहरू पत्ता लगाउनुहोस्।",
+      "No blog posts yet": "अझै कुनै ब्लग पोस्टहरू छैनन्",
+      "Check back soon for new stories!": "नयाँ कथाहरूको लागि चाँडै जाँच गर्नुहोस्!",
+      "Travel Story": "यात्रा कथा",
+      "Read More": "थप पढ्नुहोस्",
+      "Blog post not found": "ब्लग पोस्ट फेला परेन",
+      "Back to Blogs": "ब्लगहरूमा फर्कनुहोस्",
+      "Back to Stories": "कथाहरूमा फर्कनुहोस्",
+      "Written by": "लेखक",
+      "Published on": "प्रकाशित मिति",
+      "Share Story": "कथा साझा गर्नुहोस्",
+      "Interested in this experience?": "यो अनुभवमा रुचि छ?",
+      "Our expert guides can take you on the same paths described in this story. Check out our trekking packages to start your own adventure.": "हाम्रा विशेषज्ञ गाइडहरूले तपाईंलाई यस कथामा वर्णन गरिएका समान मार्गहरूमा लैजान सक्छन्। आफ्नो साहसिक कार्य सुरु गर्न हाम्रो ट्रेकिङ प्याकेजहरू हेर्नुहोस्।"
     }
   },
   hi: {
@@ -132,7 +162,11 @@ const resources = {
       "Processing Payment": "भुगतान प्रक्रिया में है",
       "Payment Successful!": "भुगतान सफल!",
       "Payment Failed": "भुगतान विफल",
-      "View My Bookings": "मेरी बुकिंग देखें"
+      "View My Bookings": "मेरी बुकिंग देखें",
+      "Blog": "ब्लॉग",
+      "Our Travel Blog": "हमारा यात्रा ब्लॉग",
+      "Read More": "और पढ़ें",
+      "Travel Story": "यात्रा कहानी"
     }
   },
   zh: {
@@ -172,7 +206,10 @@ const resources = {
       "Processing Payment": "支付处理中",
       "Payment Successful!": "支付成功！",
       "Payment Failed": "支付失败",
-      "View My Bookings": "查看我的预订"
+      "View My Bookings": "查看我的预订",
+      "Blog": "博客",
+      "Read More": "阅读更多",
+      "Our Travel Blog": "我们的旅行博客"
     }
   },
   fr: {
@@ -212,7 +249,10 @@ const resources = {
       "Processing Payment": "Traitement du Paiement",
       "Payment Successful!": "Paiement Réussi !",
       "Payment Failed": "Échec du Paiement",
-      "View My Bookings": "Voir Mes Réservations"
+      "View My Bookings": "Voir Mes Réservations",
+      "Blog": "Blog",
+      "Read More": "Lire la suite",
+      "Our Travel Blog": "Notre Blog de Voyage"
     }
   },
   de: {
@@ -252,7 +292,10 @@ const resources = {
       "Processing Payment": "Zahlung wird verarbeitet",
       "Payment Successful!": "Zahlung erfolgreich!",
       "Payment Failed": "Zahlung fehlgeschlagen",
-      "View My Bookings": "Meine Buchungen anzeigen"
+      "View My Bookings": "Meine Buchungen anzeigen",
+      "Blog": "Blog",
+      "Read More": "Weiterlesen",
+      "Our Travel Blog": "Unser Reise-Blog"
     }
   },
   ja: {
@@ -292,7 +335,10 @@ const resources = {
       "Processing Payment": "お支払い処理中",
       "Payment Successful!": "お支払い成功！",
       "Payment Failed": "お支払い失敗",
-      "View My Bookings": "予約を確認する"
+      "View My Bookings": "予約を確認する",
+      "Blog": "ブログ",
+      "Read More": "続きを読む",
+      "Our Travel Blog": "私たちの旅行ブログ"
     }
   }
 };
