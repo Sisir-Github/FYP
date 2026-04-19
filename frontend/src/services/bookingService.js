@@ -8,7 +8,7 @@ const getFilenameFromDisposition = (disposition, fallback) => {
 const bookingService = {
   getMyBookings: async () => {
     const { data } = await api.get('/bookings/me');
-    return data;
+    return Array.isArray(data?.data) ? data.data : [];
   },
 
   cancelBooking: async (bookingId) => {

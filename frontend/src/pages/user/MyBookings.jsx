@@ -35,9 +35,10 @@ const MyBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const { data } = await bookingService.getMyBookings();
-      setBookings(data.data);
+      const bookingList = await bookingService.getMyBookings();
+      setBookings(Array.isArray(bookingList) ? bookingList : []);
     } catch {
+      setBookings([]);
       toast.error('Failed to load bookings');
     } finally {
       setLoading(false);
