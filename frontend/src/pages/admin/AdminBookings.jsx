@@ -5,6 +5,7 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../context/CurrencyContext';
+import { getBookingStatusClasses, getPaymentStatusClasses } from '../../utils/booking';
 
 const AdminBookings = () => {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ const AdminBookings = () => {
       setLoading(true);
       const { data } = await api.get('/bookings');
       setBookings(data.data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load bookings');
     } finally {
       setLoading(false);
@@ -46,7 +47,7 @@ const AdminBookings = () => {
         await api.delete(`/bookings/${id}`);
         toast.success('Booking deleted successfully');
         fetchBookings();
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete booking');
       }
     }
@@ -89,6 +90,9 @@ const AdminBookings = () => {
                     </td>
                     <td className="px-6 py-4">
                        <p className="font-semibold text-gray-800 line-clamp-1">{booking.trek?.title}</p>
+                       {booking.invoiceNumber && (
+                        <p className="text-[10px] text-primary-500 mt-1 font-medium">{booking.invoiceNumber}</p>
+                       )}
                     </td>
                     <td className="px-6 py-4">
                        <p className="font-medium text-gray-700">{new Date(booking.startDate).toLocaleDateString()}</p>
@@ -99,11 +103,7 @@ const AdminBookings = () => {
                     </td>
                     <td className="px-6 py-4">
                       <select 
-                        className={`text-xs pl-2 pr-6 py-1 rounded-full border border-gray-200 outline-none ${
-                          booking.paymentStatus === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' :
-                          booking.paymentStatus === 'Refunded' ? 'bg-orange-50 text-orange-700 border-orange-200' :
-                          'bg-gray-50 text-gray-600'
-                        }`}
+                        className={`text-xs pl-2 pr-6 py-1 rounded-full border border-gray-200 outline-none ${getPaymentStatusClasses(booking.paymentStatus, 'soft')}`}
                         value={booking.paymentStatus}
                         onChange={(e) => handleStatusChange(booking._id, 'paymentStatus', e.target.value)}
                       >
@@ -115,12 +115,7 @@ const AdminBookings = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                        <select 
-                        className={`text-xs pl-2 pr-6 py-1 rounded-full border outline-none ${
-                          booking.status === 'Confirmed' ? 'bg-green-500 text-white border-green-600' :
-                          booking.status === 'Cancelled' ? 'bg-red-500 text-white border-red-600' :
-                          booking.status === 'Completed' ? 'bg-blue-500 text-white border-blue-600' :
-                          'bg-accent-500 text-white border-accent-600'
-                        }`}
+                        className={`text-xs pl-2 pr-6 py-1 rounded-full border outline-none ${getBookingStatusClasses(booking.status, 'solid')}`}
                         value={booking.status}
                         onChange={(e) => handleStatusChange(booking._id, 'status', e.target.value)}
                       >

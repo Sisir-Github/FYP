@@ -5,6 +5,7 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useTranslation } from 'react-i18next';
+import { getBookingStatusClasses } from '../../utils/booking';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -100,9 +101,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-primary-500">{formatPrice(b.totalAmount)}</p>
-                    <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full ${
-                      b.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-                    }`}>
+                    <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full ${getBookingStatusClasses(b.status, 'soft')}`}>
                       {t(b.status)}
                     </span>
                   </div>

@@ -54,9 +54,27 @@ const BookingSchema = new mongoose.Schema(
     paymentId: {
       type: String, // Khalti pidx or other reference
     },
+    transactionId: {
+      type: String,
+    },
     specialRequirements: {
       type: String,
       maxlength: 500,
+    },
+    invoiceNumber: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    invoiceIssuedAt: {
+      type: Date,
+    },
+    cancelledAt: {
+      type: Date,
+    },
+    cancelledBy: {
+      type: String,
+      enum: ['user', 'admin'],
     },
     createdAt: {
       type: Date,

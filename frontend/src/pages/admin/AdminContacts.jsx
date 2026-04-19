@@ -19,7 +19,7 @@ const AdminContacts = () => {
     try {
       const { data } = await contactService.getContacts();
       setContacts(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch contact messages');
     } finally {
       setLoading(false);
@@ -38,7 +38,7 @@ const AdminContacts = () => {
       setIsModalOpen(true);
       // Refresh list to update status if it was "new"
       fetchContacts();
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch message details');
     }
   };
@@ -49,7 +49,7 @@ const AdminContacts = () => {
         await contactService.deleteContact(id);
         toast.success('Message deleted successfully');
         fetchContacts();
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete message');
       }
     }
@@ -63,7 +63,7 @@ const AdminContacts = () => {
         setSelectedContact({ ...selectedContact, status });
       }
       fetchContacts();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     }
   };
@@ -89,7 +89,7 @@ const AdminContacts = () => {
     try {
       await navigator.clipboard.writeText(draftReply);
       toast.success('Draft copied to clipboard');
-    } catch (error) {
+    } catch {
       toast.error('Failed to copy draft');
     }
   };

@@ -6,6 +6,13 @@ const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const sendEmail = require('../utils/sendEmail');
 const emailTemplates = require('../utils/emailTemplates');
+const { getBookingCancellationEligibility, isInvoiceEligible } = require('../utils/bookingRules');
+const {
+  ensureInvoiceMetadata,
+  ensureInvoiceMetadataForMany,
+  generateInvoicePdfBuffer,
+  getInvoiceFileName,
+} = require('../services/invoiceService');
 
 /**
  * Helper to call Khalti API
@@ -31,6 +38,41 @@ const initiateKhaltiPayment = async (purchaseOrderId, purchaseOrderName, amount,
   );
 
   return response.data;
+};
+
+const userBookingPopulate = [
+  {
+    path: 'trek',
+    select: 'title images duration startPoint endPoint slug price',
+  },
+];
+
+const invoicePopulate = [
+  {
+    path: 'trek',
+    select: 'title images duration startPoint endPoint slug price',
+  },
+  {
+    path: 'user',
+    select: 'name email phone',
+  },
+];
+
+const adminBookingPopulate = [
+  {
+    path: 'user',
+    select: 'name email phone',
+  },
+  {
+    path: 'trek',
+    select: 'title price',
+  },
+];
+
+const populateBookingDocument = async (booking, populateConfig) => {
+  if (!booking) return booking;
+  await booking.populate(populateConfig);
+  return booking;
 };
 
 /**
@@ -128,12 +170,15 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
   }
 
   // Find booking
-  const booking = await Booking.findOne({ paymentId: pidx }).populate('trek').populate('user');
+  const booking = await Booking.findOne({ paymentId: pidx })
+    .populate('trek')
+    .populate('user');
   if (!booking) {
     throw new ApiError(404, 'Booking not found for this payment request');
   }
 
   if (booking.paymentStatus === 'Paid') {
+    await ensureInvoiceMetadata(booking);
     return res.status(200).json(new ApiResponse(200, 'Payment already verified', booking));
   }
 
@@ -155,7 +200,8 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
     if (status === 'Completed') {
       booking.paymentStatus = 'Paid';
       booking.status = 'Confirmed';
-      booking.paymentId = transaction_id || pidx; // update to final tx id
+      booking.transactionId = transaction_id || booking.transactionId;
+      ensureInvoiceMetadata(booking, { save: false });
       await booking.save();
 
       // Send confirmation email
@@ -165,7 +211,8 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
           subject: 'Booking Confirmation - Everest Encounter Treks',
           html: `<h1>Booking Confirmed!</h1>
                  <p>Thank you ${booking.user.name}, your payment of Rs. ${total_amount / 100} was successful.</p>
-                 <p>You are now booked for <strong>${booking.trek.title}</strong> starting on ${new Date(booking.startDate).toDateString()}.</p>`,
+                 <p>You are now booked for <strong>${booking.trek.title}</strong> starting on ${new Date(booking.startDate).toDateString()}.</p>
+                 <p>Your invoice reference is <strong>${booking.invoiceNumber}</strong>.</p>`,
         });
       } catch (err) {
         console.error('Email failed but booking confirmed');
@@ -188,13 +235,83 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
  */
 exports.getMyBookings = asyncHandler(async (req, res, next) => {
   const bookings = await Booking.find({ user: req.user.id })
-    .populate({
-      path: 'trek',
-      select: 'title images duration startPoint endPoint slug',
-    })
+    .populate(userBookingPopulate)
     .sort('-createdAt');
 
+  await ensureInvoiceMetadataForMany(bookings);
+
   res.status(200).json(new ApiResponse(200, 'User bookings fetched', bookings));
+});
+
+/**
+ * @desc    Cancel booking for the current user
+ * @route   PATCH /api/bookings/:id/cancel
+ * @access  Private
+ */
+exports.cancelMyBooking = asyncHandler(async (req, res, next) => {
+  const booking = await Booking.findById(req.params.id);
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found');
+  }
+
+  if (booking.user.toString() !== req.user.id) {
+    throw new ApiError(403, 'You are not allowed to cancel this booking.');
+  }
+
+  const cancellation = getBookingCancellationEligibility(booking);
+  if (!cancellation.canCancel) {
+    throw new ApiError(400, cancellation.reason);
+  }
+
+  booking.status = 'Cancelled';
+  booking.cancelledAt = new Date();
+  booking.cancelledBy = 'user';
+  ensureInvoiceMetadata(booking, { save: false });
+  await booking.save();
+  await populateBookingDocument(booking, userBookingPopulate);
+
+  res.status(200).json(new ApiResponse(200, 'Booking cancelled successfully', booking));
+});
+
+/**
+ * @desc    Get booking invoice PDF
+ * @route   GET /api/bookings/:id/invoice
+ * @access  Private (owner or admin)
+ */
+exports.getBookingInvoice = asyncHandler(async (req, res, next) => {
+  const booking = await Booking.findById(req.params.id);
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found');
+  }
+
+  const isOwner = booking.user.toString() === req.user.id;
+  const isAdmin = req.user.role === 'admin';
+
+  if (!isOwner && !isAdmin) {
+    throw new ApiError(403, 'You are not allowed to access this invoice.');
+  }
+
+  await populateBookingDocument(booking, invoicePopulate);
+
+  if (!isInvoiceEligible(booking)) {
+    throw new ApiError(400, 'Invoice is not available for this booking yet.');
+  }
+
+  const invoiceBuffer = await generateInvoicePdfBuffer(booking);
+  const shouldDownload = `${req.query.download || ''}`.toLowerCase() === 'true';
+  const fileName = getInvoiceFileName(booking);
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Length', invoiceBuffer.length);
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader(
+    'Content-Disposition',
+    `${shouldDownload ? 'attachment' : 'inline'}; filename="${fileName}"`
+  );
+
+  res.status(200).send(invoiceBuffer);
 });
 
 /**
@@ -204,9 +321,10 @@ exports.getMyBookings = asyncHandler(async (req, res, next) => {
  */
 exports.getAllBookings = asyncHandler(async (req, res, next) => {
   const bookings = await Booking.find()
-    .populate('user', 'name email')
-    .populate('trek', 'title price')
+    .populate(adminBookingPopulate)
     .sort('-createdAt');
+
+  await ensureInvoiceMetadataForMany(bookings);
 
   res.status(200).json(new ApiResponse(200, 'All bookings fetched', bookings));
 });
@@ -226,6 +344,20 @@ exports.updateBookingStatus = asyncHandler(async (req, res, next) => {
 
   if (status) booking.status = status;
   if (paymentStatus) booking.paymentStatus = paymentStatus;
+
+  if (booking.paymentStatus === 'Refunded' && !status) {
+    booking.status = 'Cancelled';
+  }
+
+  if (booking.status === 'Cancelled') {
+    booking.cancelledAt = booking.cancelledAt || new Date();
+    booking.cancelledBy = booking.cancelledBy || 'admin';
+  } else {
+    booking.cancelledAt = undefined;
+    booking.cancelledBy = undefined;
+  }
+
+  ensureInvoiceMetadata(booking, { save: false });
 
   await booking.save();
 

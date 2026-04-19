@@ -4,6 +4,7 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../context/CurrencyContext';
+import { getPaymentStatusClasses } from '../../utils/booking';
 
 const AdminPayments = () => {
   const { t } = useTranslation();
@@ -15,8 +16,7 @@ const AdminPayments = () => {
     const fetchPayments = async () => {
       try {
         const { data } = await api.get('/bookings');
-        // Filter for paid bookings
-        const paidBookings = data.data.filter(b => b.paymentStatus === 'Paid');
+        const paidBookings = data.data.filter((b) => b.paymentStatus === 'Paid' || b.paymentStatus === 'Refunded');
         setPayments(paidBookings);
       } catch (error) {
         console.error('Failed to fetch payments:', error);
@@ -65,7 +65,10 @@ const AdminPayments = () => {
                 payments.map((payment) => (
                   <tr key={payment._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 font-mono text-[10px] text-gray-400">
-                      {payment.transactionId || payment._id.substring(0, 10).toUpperCase()}
+                      {payment.transactionId || payment.paymentId || payment._id.substring(0, 10).toUpperCase()}
+                      {payment.invoiceNumber && (
+                        <span className="block mt-1 text-[10px] font-sans text-primary-500">{payment.invoiceNumber}</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <p className="font-bold text-gray-800">{payment.user?.name}</p>
@@ -81,9 +84,9 @@ const AdminPayments = () => {
                       {new Date(payment.updatedAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold uppercase">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getPaymentStatusClasses(payment.paymentStatus, 'soft')}`}>
                         <HiOutlineCheckCircle className="w-3 h-3" />
-                        {t('Verified')}
+                        {payment.paymentStatus === 'Refunded' ? t('Refunded') : t('Verified')}
                       </span>
                     </td>
                   </tr>

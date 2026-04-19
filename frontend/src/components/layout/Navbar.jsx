@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { HiMenu, HiX, HiUser, HiLogout, HiViewGrid, HiChevronDown, HiGlobeAlt, HiCash } from 'react-icons/hi';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../context/CurrencyContext';
+import { getWhatsAppUrl } from '../../utils/booking';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +16,7 @@ const Navbar = () => {
   const { currency, setCurrency } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
+  const whatsappUrl = getWhatsAppUrl(import.meta.env.VITE_WHATSAPP_NUMBER || '9771234567890');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -145,6 +148,22 @@ const Navbar = () => {
               ))}
             </select>
           </div>
+
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Chat with Everest Encounter on WhatsApp"
+              className={`flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+                isSolid
+                  ? 'border-green-200 bg-green-50 text-green-600 hover:bg-green-100'
+                  : 'border-white/20 bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              <FaWhatsapp className="h-5 w-5" />
+            </a>
+          )}
 
           {isAuthenticated ? (
             <div className="relative">
@@ -304,6 +323,23 @@ const Navbar = () => {
                 </select>
               </div>
             </div>
+
+            {whatsappUrl && (
+              <>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 hover:bg-green-100"
+                  aria-label="Open WhatsApp chat"
+                >
+                  <FaWhatsapp className="h-5 w-5" />
+                  Chat on WhatsApp
+                </a>
+                <hr className="border-gray-100" />
+              </>
+            )}
 
             <hr className="border-gray-100" />
             {isAuthenticated ? (

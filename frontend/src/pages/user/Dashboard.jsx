@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../context/CurrencyContext';
+import { getBookingStatusClasses } from '../../utils/booking';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ const Dashboard = () => {
           totalSpent: totalSpent,
           recentBookings: allBookings.slice(0, 3)
         });
-      } catch (error) {
+      } catch {
         console.error('Failed to fetch dashboard stats');
       } finally {
         setLoading(false);
@@ -123,7 +124,7 @@ const Dashboard = () => {
                          </div>
                        </div>
                        <div className="text-right shrink-0">
-                         <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${b.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                         <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${getBookingStatusClasses(b.status, 'soft')}`}>
                            {b.status}
                          </span>
                        </div>

@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 
 exports.createBookingValidator = [
   body('trekId').notEmpty().withMessage('Trek ID is required').isMongoId().withMessage('Invalid Trek ID format'),
@@ -9,4 +9,8 @@ exports.createBookingValidator = [
 
 exports.verifyPaymentValidator = [
   body('pidx').notEmpty().withMessage('Payment index is required for verification'),
+];
+
+exports.bookingIdParamValidator = [
+  param('id').isMongoId().withMessage('Invalid booking ID format'),
 ];
