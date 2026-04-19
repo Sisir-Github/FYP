@@ -1,11 +1,10 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { Toaster } from 'react-hot-toast';
+import AiChatWidget from '../common/AiChatWidget';
 
 const MainLayout = () => {
-  const location = useLocation();
-
   return (
     <div className="flex flex-col min-h-screen">
       <Toaster
@@ -31,6 +30,7 @@ const MainLayout = () => {
         <Outlet />
       </main>
       <Footer />
+      <AiChatWidget />
     </div>
   );
 };

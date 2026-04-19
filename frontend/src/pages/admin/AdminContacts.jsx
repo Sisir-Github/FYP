@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { HiOutlineTrash, HiOutlineEye, HiOutlineReply } from 'react-icons/hi';
+import { HiOutlineTrash, HiOutlineEye, HiOutlineReply, HiSparkles, HiClipboardCopy } from 'react-icons/hi';
 import contactService from '../../services/contactService';
+import aiService from '../../services/aiService';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,8 @@ const AdminContacts = () => {
   const [loading, setLoading] = useState(true);
   const [selectedContact, setSelectedContact] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [draftReply, setDraftReply] = useState('');
 
   const fetchContacts = async () => {
     try {
@@ -31,6 +34,7 @@ const AdminContacts = () => {
     try {
       const { data } = await contactService.getContact(id);
       setSelectedContact(data);
+      setDraftReply('');
       setIsModalOpen(true);
       // Refresh list to update status if it was "new"
       fetchContacts();
@@ -61,6 +65,32 @@ const AdminContacts = () => {
       fetchContacts();
     } catch (error) {
       toast.error('Failed to update status');
+    }
+  };
+
+  const handleGenerateDraft = async () => {
+    if (!selectedContact?._id || draftLoading) return;
+
+    setDraftLoading(true);
+    try {
+      const { data } = await aiService.generateContactReply(selectedContact._id);
+      setDraftReply(data.draft);
+      toast.success('AI draft reply generated');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to generate AI draft');
+    } finally {
+      setDraftLoading(false);
+    }
+  };
+
+  const handleCopyDraft = async () => {
+    if (!draftReply) return;
+
+    try {
+      await navigator.clipboard.writeText(draftReply);
+      toast.success('Draft copied to clipboard');
+    } catch (error) {
+      toast.error('Failed to copy draft');
     }
   };
 
@@ -168,9 +198,45 @@ const AdminContacts = () => {
               <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{selectedContact.message}</p>
             </div>
 
+            {draftReply && (
+              <div className="mb-6 rounded-xl border border-primary-100 bg-primary-50/60 p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-primary-700">AI Reply Draft</h3>
+                    <p className="text-xs text-primary-600">Review before sending to the customer.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyDraft}
+                    className="btn bg-white text-primary-600 hover:bg-primary-100 px-3 py-2 text-xs"
+                  >
+                    <HiClipboardCopy /> Copy
+                  </button>
+                </div>
+                <textarea
+                  value={draftReply}
+                  onChange={(event) => setDraftReply(event.target.value)}
+                  rows={8}
+                  className="input resize-y bg-white"
+                />
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-3 pt-6 border-t">
               <button
-                onClick={() => (window.location.href = `mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject}`)}
+                onClick={handleGenerateDraft}
+                disabled={draftLoading}
+                className="btn bg-primary-50 text-primary-700 hover:bg-primary-100"
+              >
+                <HiSparkles />
+                {draftLoading ? 'Generating AI Draft...' : 'AI Draft Reply'}
+              </button>
+              <button
+                onClick={() => {
+                  const subject = encodeURIComponent(`Re: ${selectedContact.subject}`);
+                  const body = draftReply ? `&body=${encodeURIComponent(draftReply)}` : '';
+                  window.location.href = `mailto:${selectedContact.email}?subject=${subject}${body}`;
+                }}
                 className="btn-primary flex items-center gap-2"
               >
                 <HiOutlineReply /> Reply via Email

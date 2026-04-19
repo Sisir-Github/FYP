@@ -15,7 +15,8 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-const PORT = process.env.PORT || 5000;
+const DEFAULT_PORT = 5050;
+const PORT = Number(process.env.PORT) || DEFAULT_PORT;
 
 // Connect to database and start server
 const startServer = async () => {
@@ -24,6 +25,17 @@ const startServer = async () => {
 
     const server = app.listen(PORT, () => {
       logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(
+          `Port ${PORT} is already in use. Update backend/.env and frontend/.env to the same free port and restart both servers.`
+        );
+      } else {
+        logger.error(`Server startup error: ${err.message}`);
+      }
+      process.exit(1);
     });
 
     // Handle unhandled promise rejections

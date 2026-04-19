@@ -9,7 +9,7 @@ async function test() {
     form.append('title', 'CRUD Test Blog');
     form.append('description', 'Testing full CRUD ops');
     // just dummy token for admin since we just want to see the error output 
-    const res = await axios.post('http://localhost:5000/api/blogs', form, {
+    const res = await axios.post('http://localhost:5050/api/blogs', form, {
       headers: {
         ...form.getHeaders(),
         Authorization: 'Bearer fake'

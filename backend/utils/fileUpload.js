@@ -46,7 +46,7 @@ const fileUpload = {
       fs.writeFileSync(uploadPath, buffer);
       
       // Return a URL relative to the server
-      const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`;
+      const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5050}`;
       return {
         public_id: fileName, // Using filename as ID for deletion
         url: `${serverUrl}/uploads/${folder}/${fileName}`
